@@ -1,8 +1,8 @@
 #include "grafo.h"
-#include "/home/vinki/Documents/TDAs/GRAFO_C/lista/lista.h"
-#include "/home/vinki/Documents/TDAs/GRAFO_C/lista/pila.h"
-#include "/home/vinki/Documents/TDAs/GRAFO_C/lista/cola.h"
-#include "/home/vinki/Documents/TDAs/GRAFO_C/heap/heap.h"
+#include "../lista/lista.h"
+#include "../lista/pila.h"
+#include "../lista/cola.h"
+#include "../heap/heap.h"
 
 grafo_t *grafo_crear(int n)
 {
