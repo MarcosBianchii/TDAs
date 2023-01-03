@@ -38,7 +38,7 @@ static void sift_down(void **v, int (*cmp)(void *, void *), int tope, int i)
 heap_t *heap_crear(heap_comparador cmp, int n)
 {
       if (!cmp) return NULL;
-      if (n > 10) n = 10;
+      if (n < 10) n = 10;
 
       heap_t *h = malloc(sizeof(heap_t));
       if (!h) return NULL;
