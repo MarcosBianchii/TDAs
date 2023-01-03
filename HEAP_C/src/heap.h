@@ -1,3 +1,6 @@
+#ifndef __HEAP_H__
+#define __HEAP_H__
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -39,3 +42,5 @@ void heap_destruir_todo(heap_t *h, void (*f)(void *));
 
 // Ordena un vector de punteros.
 void heapsort(void **v, heap_comparador cmp, int n);
+
+#endif // __HEAP_H__
