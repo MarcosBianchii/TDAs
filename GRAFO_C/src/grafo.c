@@ -119,8 +119,8 @@ void grafo_imprimir(grafo_t *g)
 
       printf("\n  "VERDE);
       for (int i = 0; i < g->n; i++) {
-            int i_len = i-1 <= 0 ? 1 : floor(log10(i-1))+1;
-            for (int j = 0; j < 3 - i_len+1; j++)
+            int i_len = i == 0 ? 1 : floor(log10(i))+1;
+            for (int j = 0; j < 2 + n_len - i_len; j++)
                   printf(" ");
             printf("%i", i);
       }
@@ -169,13 +169,20 @@ void grafo_imprimir(grafo_t *g)
       printf("\nn: %i | m: %i\n\n", g->n, g->m);
 }
 
-void grafo_complementar(grafo_t *g)
+grafo_t *grafo_complementar(grafo_t *g)
 {
-      if (!g) return;
+      if (!g) return NULL;
 
+      grafo_t *c = grafo_crear(g->n);
       for (int i = 0; i < g->n; i++)
-            for (int j = 0; j < i; j++)
-                  g->matriz[i][j] = g->matriz[i][j] == 0 ? 1 : 0;
+            for (int j = 0; j <= i; j++) {
+                  if (g->matriz[i][j] == 0) {
+                        c->matriz[i][j] = 1;
+                        c->m++;
+                  }
+            }
+      
+      return c;
 }
 
 static void grafo_DFS_rec(grafo_t *g, pila_t *p, int u, int v, int *array, char *visitados, int *len)

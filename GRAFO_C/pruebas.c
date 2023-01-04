@@ -132,6 +132,27 @@ void prueba_grafo_imprimir()
       grafo_destruir(g);
 }
 
+void prueba_grafo_complementar()
+{
+      print_menu("Prueba grafo_complementar()");
+
+      grafo_t *g = grafo_crear(5);
+
+      grafo_agregar_arista(g, 0, 4, 1);
+      grafo_agregar_arista(g, 1, 4, 2);
+      grafo_agregar_arista(g, 2, 3, 3);
+      grafo_agregar_arista(g, 3, 2, 4);
+
+      grafo_imprimir(g);
+
+      grafo_t *c = grafo_complementar(g);
+
+      grafo_imprimir(c);
+
+      grafo_destruir(g);
+      grafo_destruir(c);
+}
+
 void prueba_grafo_DFS()
 {
       print_menu("Prueba grafo_DFS()");
@@ -304,9 +325,10 @@ int main()
       // prueba_grafo_peso_arista();
       // prueba_grafo();
       // prueba_grafo_imprimir();
+      // prueba_grafo_complementar();
       // prueba_grafo_DFS();
       // prueba_grafo_BFS();
       // prueba_grafo_kruskal();
-      // prueba_grafo_prim();
+      prueba_grafo_prim();
       return 0;
 }

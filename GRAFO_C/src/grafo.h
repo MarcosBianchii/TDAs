@@ -70,8 +70,8 @@ int grafo_tamanio(grafo_t *g);
 // y su número de vertices y aristas.
 void grafo_imprimir(grafo_t *g);
 
-// Devuelve el grafo complementario de g.
-void grafo_complementar(grafo_t *g);
+// Devuelve un grafo complementario a g.
+grafo_t *grafo_complementar(grafo_t *g);
 
 // Recorre el Grafo en profundidad de u a v.
 // Devuelve un arreglo con el recorrido y su tope en len.
