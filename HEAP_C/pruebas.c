@@ -111,11 +111,11 @@ void pruebas_heapify()
 
 int main()
 {
-//      pruebas_heap_crear();
-//      pruebas_heap_insertar();
+      pruebas_heap_crear();
+      pruebas_heap_insertar();
       pruebas_heap_quitar();
-//      pruebas_heap_tamanio();
-//      pruebas_heapify();
+      pruebas_heap_tamanio();
+      pruebas_heapify();
 
       return 0;
 }

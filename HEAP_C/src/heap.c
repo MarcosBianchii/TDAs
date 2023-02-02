@@ -55,7 +55,7 @@ heap_t *heap_crear(heap_comparador cmp, int n)
 
 static heap_t *heap_agrandar(heap_t *h)
 {
-      int nueva_capacidad = h->capacidad * 2;
+      size_t nueva_capacidad = h->capacidad * 2;
       void *bloque = realloc(h->vector, sizeof(void *) * nueva_capacidad);
       if (!bloque) return NULL;
 
