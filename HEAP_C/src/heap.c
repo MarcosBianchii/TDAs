@@ -44,7 +44,10 @@ heap_t *heap_crear(heap_comparador cmp, int n)
       if (!h) return NULL;
 
       h->vector = malloc(sizeof(void *) * n);
-      if (!h->vector) return NULL;
+      if (!h->vector) {
+            free(h);
+            return NULL;
+      }
 
       h->cmp = cmp;
       h->tamanio = 0;
