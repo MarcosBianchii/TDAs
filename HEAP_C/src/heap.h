@@ -7,7 +7,6 @@
 
 typedef int (*heap_comparador)(void *, void *);
 
-// Struct de Heap.
 typedef struct Heap {
       void **vector;
       size_t tamanio;
