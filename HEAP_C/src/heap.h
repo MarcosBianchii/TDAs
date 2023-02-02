@@ -10,8 +10,8 @@ typedef int (*heap_comparador)(void *, void *);
 // Struct de Heap.
 typedef struct Heap {
       void **vector;
-      int tamanio;
-      size_t size;
+      size_t tamanio;
+      size_t capacidad;
       heap_comparador cmp;
 } heap_t;
 

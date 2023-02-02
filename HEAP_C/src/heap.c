@@ -47,20 +47,20 @@ heap_t *heap_crear(heap_comparador cmp, int n)
       if (!h->vector) return NULL;
 
       h->cmp = cmp;
-      h->size = n;
       h->tamanio = 0;
+      h->capacidad = n;
 
       return h;
 }
 
 static heap_t *heap_agrandar(heap_t *h)
 {
-      int nuevo_size = h->size * 2;
-      void *bloque = realloc(h->vector, sizeof(void *) * nuevo_size);
+      int nueva_capacidad = h->capacidad * 2;
+      void *bloque = realloc(h->vector, sizeof(void *) * nueva_capacidad);
       if (!bloque) return NULL;
 
       h->vector = bloque;
-      h->size = nuevo_size;
+      h->capacidad = nueva_capacidad;
 
       return h;
 }
@@ -69,7 +69,7 @@ heap_t *heap_insertar(heap_t *h, void *item)
 {
       if (!h) return NULL;
 
-      if (h->tamanio == h->size)
+      if (h->tamanio == h->capacidad)
             heap_agrandar(h);
 
       h->vector[h->tamanio] = item;
