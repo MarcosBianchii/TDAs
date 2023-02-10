@@ -1,10 +1,6 @@
 #include "digrafo.h"
 
 digrafo_t *digrafo_crear(int n)
-/*
-//    Reserva memoria para
-//    un digrafo.
-*/
 {
       if (n < 1) return NULL;
 
@@ -23,18 +19,13 @@ digrafo_t *digrafo_crear(int n)
       return d;
 }
 
-static bool dentro_de_rango(digrafo_t *d, int a, int b)
-/*
 //    Devuelve true si la posicion en la lista existe.
-*/
+static bool dentro_de_rango(digrafo_t *d, int a, int b)
 {
       return a >= 0 && a < d->n && b >= 0 && b < d->n;
 }
 
 digrafo_t *digrafo_agregar_arista(digrafo_t *d, int v1, int v2, int peso)
-/*
-//    Agrega una arista a la lista.
-*/
 {
       if (!d || !dentro_de_rango(d, v1, v2))
             return NULL;
@@ -51,10 +42,8 @@ digrafo_t *digrafo_agregar_arista(digrafo_t *d, int v1, int v2, int peso)
       return d;
 }
 
-static nodo_t *search_and_destroy(nodo_t *actual, int v0, int *peso)
-/*
 //    Elimina un nodo de la lista de nodos.
-*/
+static nodo_t *search_and_destroy(nodo_t *actual, int v0, int *peso)
 {
       if (!actual) return NULL;
 
@@ -70,9 +59,6 @@ static nodo_t *search_and_destroy(nodo_t *actual, int v0, int *peso)
 }
 
 int digrafo_borrar_arista(digrafo_t *d, int v1, int v2)
-/*
-//    Elimina una arista de la lista.
-*/
 {
       if (!d || !dentro_de_rango(d, v1, v2))
             return -1;
@@ -83,11 +69,9 @@ int digrafo_borrar_arista(digrafo_t *d, int v1, int v2)
       return peso;
 }
 
-static int iterar_lista(nodo_t *nodo, int v0, void (*f)(void *))
-/*
 //    Itera la lista de adyacencia aplicando
 //    una funciona cada nodo.
-*/
+static int iterar_lista(nodo_t *nodo, int v0, void (*f)(void *))
 {
       if (!nodo) return -1;
 
@@ -101,10 +85,6 @@ static int iterar_lista(nodo_t *nodo, int v0, void (*f)(void *))
 }
 
 bool digrafo_existe_arista(digrafo_t *d, int v1, int v2)
-/*
-//    Devuelve true si existe una arista
-//    desde el vertice v1 al v2.
-*/
 {
       if (!d || !dentro_de_rango(d, v1, v2))
             return false;
@@ -115,9 +95,6 @@ bool digrafo_existe_arista(digrafo_t *d, int v1, int v2)
 }
 
 int digrafo_peso_arista(digrafo_t *d, int v1, int v2)
-/*
-//    Devuelve el peso de la arista.
-*/
 {
       if (!d || !dentro_de_rango(d, v1, v2))
             return -1;
@@ -126,19 +103,13 @@ int digrafo_peso_arista(digrafo_t *d, int v1, int v2)
 }
 
 int digrafo_tamanio(digrafo_t *d)
-/*
-//    Devuelve el cardinal de
-//    aristas del digrafo.
-*/
 {
       if (!d) return 0;
       return d->m;
 }
 
-static void imprimir_nodo(void *n)
-/*
 //    Imprime un nodo por pantalla.
-*/
+static void imprimir_nodo(void *n)
 {
       nodo_t *nodo = n;
 
@@ -147,10 +118,6 @@ static void imprimir_nodo(void *n)
 }
 
 void digrafo_imprimir(digrafo_t *d)
-/*
-//    Imprime la estructura del
-//    digrafo por pantalla.
-*/
 {
       if (!d) {
             printf(ROJO"El Digrafo es NULL\n"BLANCO);
@@ -168,11 +135,6 @@ void digrafo_imprimir(digrafo_t *d)
 }
 
 void digrafo_destruir(digrafo_t *d)
-/*
-//    Libera la memoria reservada
-//    por digrafo_crear() y sus
-//    nodos de la lista.
-*/
 {
       if (!d) return;
 
