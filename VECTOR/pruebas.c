@@ -1,4 +1,5 @@
 #include "src/vector.h"
+#include <stdio.h>
 
 void pruebas_vector_crear()
 {
