@@ -30,7 +30,7 @@ static vector_t *vector_agrandar(vector_t *v)
       return v;
 }
 
-vector_t *vector_agregar(vector_t *v, void *elemento, int posicion)
+vector_t *vector_agregar_en(vector_t *v, void *elemento, int posicion)
 {
       if (!v) return NULL;
 
@@ -50,7 +50,7 @@ vector_t *vector_agregar(vector_t *v, void *elemento, int posicion)
 
 void *vector_obtener(vector_t *v, int posicion)
 {
-      if (!v) return NULL;
+      if (!v || vector_vacio(v)) return NULL;
 
       if (posicion < 0) posicion = 0;
       if (posicion >= v->tamanio) posicion = v->tamanio - 1;
@@ -58,9 +58,9 @@ void *vector_obtener(vector_t *v, int posicion)
       return v->data[posicion];
 }
 
-void *vector_eliminar(vector_t *v, int posicion)
+void *vector_eliminar_en(vector_t *v, int posicion)
 {
-      if (!v) return NULL;
+      if (!v || vector_vacio(v)) return NULL;
 
       if (posicion < 0) posicion = 0;
       if (posicion >= v->tamanio) posicion = v->tamanio - 1;
@@ -74,7 +74,17 @@ void *vector_eliminar(vector_t *v, int posicion)
       return elemento;
 }
 
-size_t vector_cantidad(vector_t *v)
+vector_t *vector_push(vector_t *v, void *elemento)
+{
+      return vector_agregar_en(v, elemento, v->tamanio);
+}
+
+void *vector_pop(vector_t *v)
+{
+      return vector_eliminar_en(v, v->tamanio - 1);
+}
+
+size_t vector_tamanio(vector_t *v)
 {
       if (!v) return 0;
       return v->tamanio;
