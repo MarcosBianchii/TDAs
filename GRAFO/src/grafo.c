@@ -184,7 +184,7 @@ grafo_t *grafo_complementar(grafo_t *g)
 
       for (int i = 0; i < g->n; i++)
             for (int j = 0; j <= i; j++)
-                  if (!grafo_existe_arista(g, i, j))
+                  if (i != j && !grafo_existe_arista(g, i, j))
                         c->matriz[i][j].existe = true;
       return c;
 }

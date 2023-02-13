@@ -349,8 +349,6 @@ void prueba_grafo_dijkstra()
       grafo_agregar_arista(g, 3, 5, 5);
       grafo_agregar_arista(g, 2, 4, 0);
 
-
-
       grafo_imprimir(g);
 
       int len = 0, coste = 0, u = 0, v = 5;
