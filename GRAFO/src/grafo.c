@@ -117,7 +117,10 @@ void grafo_imprimir(grafo_t *g)
       }
 
       int n_len = floor(log10(g->n))+1;
-      printf("\n  "VERDE);
+      printf("\n "VERDE);
+      for (int i = 0; i < n_len - 1; i++)
+            printf(" ");
+
       for (int i = 0; i < g->n; i++) {
             int i_len = i == 0 ? 1 : floor(log10(i))+1;
             for (int j = 0; j < 3 - i_len + 1; j++)
@@ -145,17 +148,13 @@ void grafo_imprimir(grafo_t *g)
             printf(BLANCO" |");
 
             for (int j = i; j < g->n; j++) {
-                  if (!grafo_existe_arista(g, i, j))
-                        printf(NEGRO);
-                  else  printf(ROJO);
-
-                  int pos_len = !grafo_existe_arista(g, i, j) ? 1 : floor(log10(grafo_peso_arista(g, i, j)))+1;
+                  int pos_len_peso = grafo_peso_arista(g, i, j) == 0 ? 1 : grafo_peso_arista(g, i, j);
+                  int pos_len = !grafo_existe_arista(g, i, j) ? 1 : floor(log10(pos_len_peso)) + 1;
                   if (pos_len <= 2) printf(" ");
 
                   if (grafo_existe_arista(g, i, j))
-                        printf("%i", grafo_peso_arista(g, i, j));
+                        printf(ROJO"%i"BLANCO, grafo_peso_arista(g, i, j));
                   else  printf(" ");
-                  printf(BLANCO);
 
                   if (pos_len == 1) printf(" ");
                   printf("|");
@@ -449,6 +448,9 @@ static bool dijkstra(grafo_t *g, int u, int v, heap_t *h, char visitados[], int 
                   }
             }
 
+      if (heap_vacio(h))
+            return false;
+      
       visitados[u] = 1;
       arista_t *arista = heap_quitar(h);
       int proximo_vertice = arista->v;
