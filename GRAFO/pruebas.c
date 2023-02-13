@@ -363,6 +363,5 @@ int main()
       // prueba_grafo_kruskal();
       // prueba_grafo_prim();
       // prueba_grafo_dijkstra();
-      printf("Hello World!\n");
       return 0;
 }
