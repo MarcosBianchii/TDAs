@@ -316,6 +316,38 @@ void prueba_grafo_prim()
       grafo_destruir(p);
 }
 
+void prueba_grafo_dijkstra()
+{
+      print_menu("Prueba grafo_dijkstra()");
+
+      grafo_t *g = grafo_crear(7);
+      grafo_agregar_arista(g, 0, 1, 2);
+      grafo_agregar_arista(g, 0, 2, 5);
+      grafo_agregar_arista(g, 0, 3, 4);
+      grafo_agregar_arista(g, 1, 2, 2);
+      grafo_agregar_arista(g, 1, 4, 7);
+      grafo_agregar_arista(g, 2, 3, 1);
+      grafo_agregar_arista(g, 2, 4, 4);
+      grafo_agregar_arista(g, 2, 5, 3);
+      grafo_agregar_arista(g, 3, 5, 4);
+      grafo_agregar_arista(g, 4, 5, 1);
+      grafo_agregar_arista(g, 4, 6, 5);
+      grafo_agregar_arista(g, 5, 6, 7);
+
+      grafo_imprimir(g);
+
+      int len = 0, coste = 0, u = 0, v = 6;
+      int *dist = grafo_dijkstra(g, u, v, &len, &coste);
+
+      printf("Distancias desde %i a %i con un coste de %i\n > ", u, v, coste);
+      for (int i = 0; i < len; i++)
+            printf("%d ", dist[i]);
+      printf("\n");
+
+      free(dist);
+      grafo_destruir(g);
+}
+
 int main()
 {
       // prueba_grafo_crear();
@@ -329,6 +361,7 @@ int main()
       // prueba_grafo_DFS();
       // prueba_grafo_BFS();
       // prueba_grafo_kruskal();
-      prueba_grafo_prim();
+      // prueba_grafo_prim();
+      // prueba_grafo_dijkstra();
       return 0;
 }

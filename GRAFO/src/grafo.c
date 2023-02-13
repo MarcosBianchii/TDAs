@@ -117,10 +117,10 @@ void grafo_imprimir(grafo_t *g)
 
       int n_len = floor(log10(g->n))+1;
 
-      printf("\n  "VERDE);
+      printf("\n "VERDE);
       for (int i = 0; i < g->n; i++) {
             int i_len = i == 0 ? 1 : floor(log10(i))+1;
-            for (int j = 0; j < 2 + n_len - i_len; j++)
+            for (int j = 0; j < 3 + n_len - i_len; j++)
                   printf(" ");
             printf("%i", i);
       }
@@ -193,8 +193,7 @@ static void grafo_DFS_rec(grafo_t *g, pila_t *p, int u, int v, int *array, char 
                   return;
             }
 
-            if (grafo_existe_arista(g, u, i)
-            && !visitados[i]) {
+            if (grafo_existe_arista(g, u, i) && !visitados[i]) {
                   visitados[i]++;
                   int *apilar = malloc(sizeof(int));
                   *apilar = i;
@@ -248,8 +247,7 @@ static void grafo_BFS_rec(grafo_t *g, cola_t *c, int u, int v, int *array, char 
                   return;
             }
 
-            if (grafo_existe_arista(g, u, i)
-            && !visitados[i]) {
+            if (grafo_existe_arista(g, u, i) && !visitados[i]) {
                   visitados[i]++;
                   int *encolar = malloc(sizeof(int));
                   *encolar = i;
@@ -329,8 +327,7 @@ static grafo_t *prim_rec(grafo_t *g, grafo_t *p, heap_t *h, char visitados[], in
       visitados[v0] = 1;
 
       for (int i = 0; i < p->n; i++) {
-            if (grafo_existe_arista(g, v0, i)
-            && !visitados[i]) {
+            if (grafo_existe_arista(g, v0, i) && !visitados[i]) {
                   arista_t *a = malloc(sizeof(arista_t));
                   if (!a) {
                         grafo_destruir(p);
@@ -372,7 +369,7 @@ grafo_t *grafo_prim(grafo_t *g, int v0)
             return NULL;
       }
 
-      char visitados[p->n * sizeof(char)];
+      char visitados[p->n];
       memset(visitados, 0, sizeof(visitados));
       p = prim_rec(g, p, h, visitados, v0);
       heap_destruir_todo(h, free);
@@ -424,6 +421,104 @@ grafo_t *grafo_kruskal(grafo_t *g)
 
       heap_destruir_todo(h, free);
       return k;
+}
+
+static bool dijkstra(grafo_t *g, int u, int v, heap_t *h, char visitados[], int anterior[], float pesos[])
+{
+      if (u == v) return true;
+
+      for (int i = 0; i < g->n; i++)
+            if (grafo_existe_arista(g, u, i) && !visitados[i]) {
+                  int peso_arista = grafo_peso_arista(g, u, i);
+                  arista_t *arista = malloc(sizeof(arista_t));
+                  if (!arista) return false;
+
+                  arista->peso = peso_arista;
+                  arista->u = u;
+                  arista->v = i;
+                  heap_insertar(h, arista);
+
+                  if (peso_arista + pesos[u] < pesos[i]) {
+                        pesos[i] = peso_arista + pesos[u];
+                        anterior[i] = u;
+                  }
+            }
+
+      visitados[u] = 1;
+      arista_t *arista = heap_quitar(h);
+      int proximo_vertice = arista->v;
+      int peso = arista->peso + pesos[u];
+      free(arista);
+
+      dijkstra(g, proximo_vertice, v, h, visitados, anterior, pesos);
+}
+
+static bool conseguir_camino(int u, int v, pila_t *p, int anterior[])
+{
+      if (u == v) return true;
+
+      int *n = malloc(sizeof(int));
+      if (!n) return false;
+
+      *n = anterior[v];
+      pila_apilar(p, n);
+      conseguir_camino(u, *n, p, anterior);
+}
+
+static void llenar_camino(pila_t *p, int *camino, int *len, int v)
+{
+      while (!pila_vacia(p)) {
+            int *v = pila_desapilar(p);
+            camino[(*len)++] = *v;
+            free(v);
+      }
+
+      camino[(*len)++] = v;
+}
+
+int *grafo_dijkstra(grafo_t *g, int u, int v, int *len, int *coste)
+{
+      if (!g || !dentro_de_rango(g, u, v) || !len)
+            return NULL;
+      
+      *len = 0;
+      *coste = 0;
+      int *camino = malloc(g->n * sizeof(int));
+      heap_t *h = heap_crear(comparador_arista, g->m);
+      if (!camino || !h) {
+            free(camino);
+            heap_destruir(h);
+            return NULL;
+      }
+
+      char visitados[g->n];
+      int anterior[g->n];
+      float pesos[g->n];
+      memset(visitados, 0, sizeof(visitados));
+      for (int i = 0; i < g->n; i++) {
+            anterior[i] = -1;
+            pesos[i] = INFINITY;
+      }
+
+      pesos[u] = 0;
+      if (!dijkstra(g, u, v, h, visitados, anterior, pesos)) {
+            heap_destruir_todo(h, free);
+            free(camino);
+            return NULL;
+      }
+
+      heap_destruir_todo(h, free);
+      pila_t *p = pila_crear();
+      if (!conseguir_camino(u, v, p, anterior)) {
+            pila_destruir_todo(p, free);
+            free(camino);
+            return NULL;
+      }
+
+      llenar_camino(p, camino, len, v);
+      pila_destruir_todo(p, free);
+      *coste = pesos[v];
+      return camino;
 }
 
 void grafo_destruir(grafo_t *g)

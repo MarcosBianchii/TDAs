@@ -7,30 +7,8 @@
 #include <math.h>
 #include <string.h>
 
-/*
- * struct de Grafo no dirigido con matriz de adyacencia.
 
- * grafo_crear()
- * grafo_destruir()
-
- * grafo_agregar_arista()
- * grafo_eliminar_arista()
- * grafo_existe_arista()
- * grafo_peso_arista()
-
- * grafo_orden()
- * grafo_tamanio()
- * grafo_imprimir()
- * grafo_complementar()
-
- * ~~~~~ Recorridos y Algoritmos ~~~~~
-
- * grafo_DFS()
- * grafo_BFS()
-
- * grafo_prim()
- * grafo_kruskal()
-*/
+// struct de Grafo con matriz de adyacencia.
 typedef struct Grafo {
       int **matriz;
       int n;
@@ -43,9 +21,7 @@ typedef struct Grafo {
 #define AMARILLO "\033[0;33m"
 #define BLANCO   "\033[0;37m"
 
-/*
-Reserva memoria para un grafo de n vertices.
-*/
+// Reserva memoria para un grafo de n vertices.
 grafo_t *grafo_crear(int n);
 
 // Agrega una arista entre v1 y v2 con peso.
@@ -89,6 +65,10 @@ grafo_t *grafo_prim(grafo_t *g, int v0);
 // Aplica Kruskal al grafo y devuelve
 // su spanning tree minimo.
 grafo_t *grafo_kruskal(grafo_t *g);
+
+// Devuelve el camino minimo entre u y v.
+// Devuelve un arreglo con el recorrido, su tope en len y su suma de pesos en coste.
+int *grafo_dijkstra(grafo_t *g, int u, int v, int *len, int *coste);
 
 // Libera la memoria reservada por grafo_crear().
 void grafo_destruir(grafo_t *g);
