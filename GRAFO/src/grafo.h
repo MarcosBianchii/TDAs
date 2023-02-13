@@ -7,10 +7,14 @@
 #include <math.h>
 #include <string.h>
 
+typedef struct Celda {
+      int peso;
+      bool existe:1;
+} celda_t;
 
 // struct de Grafo con matriz de adyacencia.
 typedef struct Grafo {
-      int **matriz;
+      celda_t **matriz;
       int n;
       int m;
 } grafo_t;

@@ -18,7 +18,7 @@ grafo_t *grafo_crear(int n)
       }
 
       for (int i = 0; i < n; i++) {
-            g->matriz[i] = calloc(i + 1, sizeof(int));
+            g->matriz[i] = calloc(i + 1, sizeof(celda_t));
             if (!g->matriz[i]) {
                   grafo_destruir(g);
                   return NULL;
@@ -30,6 +30,7 @@ grafo_t *grafo_crear(int n)
       return g;
 }
 
+// Devuelve true si los vertices estan dentro del intervalo [0, n-1].
 static bool dentro_de_rango(grafo_t *g, int a, int b)
 {
       return (a >= 0 && b >= 0 && a < g->n && b < g->n);
@@ -50,10 +51,11 @@ grafo_t *grafo_agregar_arista(grafo_t *g, int v1, int v2, int peso)
       if (v1 < v2)
             swap(&v1, &v2);
 
-      if (g->matriz[v1][v2] == 0)
+      if (!grafo_existe_arista(g, v1, v2))
             g->m++;
 
-      g->matriz[v1][v2] = peso;
+      g->matriz[v1][v2].peso = peso;
+      g->matriz[v1][v2].existe = true;
       return g;
 }
 
@@ -65,10 +67,11 @@ grafo_t *grafo_eliminar_arista(grafo_t *g, int v1, int v2)
       if (v1 < v2)
             swap(&v1, &v2);
 
-      if (g->matriz[v1][v2] != 0)
+      if (grafo_existe_arista(g, v1, v2))
             g->m--;
 
-      g->matriz[v1][v2] = 0;
+      g->matriz[v1][v2].peso = 0;
+      g->matriz[v1][v2].existe = false;
       return g;
 }
 
@@ -78,11 +81,9 @@ bool grafo_existe_arista(grafo_t *g, int v1, int v2)
             return false;
 
       if (v1 < v2)
-            return g->matriz[v2][v1] != 0;
-      else
-            return g->matriz[v1][v2] != 0;
-
-      return false;
+            swap(&v1, &v2);
+      
+      return g->matriz[v1][v2].existe;
 }
 
 int grafo_peso_arista(grafo_t *g, int v1, int v2)
@@ -91,9 +92,9 @@ int grafo_peso_arista(grafo_t *g, int v1, int v2)
             return 0;
 
       if (v1 < v2)
-            return g->matriz[v2][v1];
-      else
-            return g->matriz[v1][v2];
+            swap(&v1, &v2);
+      
+      return g->matriz[v1][v2].peso;
 }
 
 int grafo_orden(grafo_t *g)
@@ -116,11 +117,10 @@ void grafo_imprimir(grafo_t *g)
       }
 
       int n_len = floor(log10(g->n))+1;
-
-      printf("\n "VERDE);
+      printf("\n  "VERDE);
       for (int i = 0; i < g->n; i++) {
             int i_len = i == 0 ? 1 : floor(log10(i))+1;
-            for (int j = 0; j < 3 + n_len - i_len; j++)
+            for (int j = 0; j < 3 - i_len + 1; j++)
                   printf(" ");
             printf("%i", i);
       }
@@ -145,13 +145,18 @@ void grafo_imprimir(grafo_t *g)
             printf(BLANCO" |");
 
             for (int j = i; j < g->n; j++) {
-                  if (g->matriz[j][i] == 0)
+                  if (!grafo_existe_arista(g, i, j))
                         printf(NEGRO);
                   else  printf(ROJO);
 
-                  int pos_len = g->matriz[j][i] == 0 ? 1 : floor(log10(g->matriz[j][i]))+1;
+                  int pos_len = !grafo_existe_arista(g, i, j) ? 1 : floor(log10(grafo_peso_arista(g, i, j)))+1;
                   if (pos_len <= 2) printf(" ");
-                  printf("%i"BLANCO, g->matriz[j][i]);
+
+                  if (grafo_existe_arista(g, i, j))
+                        printf("%i", grafo_peso_arista(g, i, j));
+                  else  printf(" ");
+                  printf(BLANCO);
+
                   if (pos_len == 1) printf(" ");
                   printf("|");
             }
@@ -174,14 +179,14 @@ grafo_t *grafo_complementar(grafo_t *g)
       if (!g) return NULL;
 
       grafo_t *c = grafo_crear(g->n);
+      if (!c) return NULL;
+
+      c->m = g->n * (g->n - 1) / 2 - g->m;
+
       for (int i = 0; i < g->n; i++)
-            for (int j = 0; j <= i; j++) {
-                  if (g->matriz[i][j] == 0) {
-                        c->matriz[i][j] = 1;
-                        c->m++;
-                  }
-            }
-      
+            for (int j = 0; j <= i; j++)
+                  if (!grafo_existe_arista(g, i, j))
+                        c->matriz[i][j].existe = true;
       return c;
 }
 
@@ -400,7 +405,7 @@ grafo_t *grafo_kruskal(grafo_t *g)
 
                         a->u = i;
                         a->v = j;
-                        a->peso = g->matriz[i][j];
+                        a->peso = g->matriz[i][j].peso;
                         heap_insertar(h, a);
                   }
 
@@ -517,7 +522,7 @@ int *grafo_dijkstra(grafo_t *g, int u, int v, int *len, int *coste)
 
       llenar_camino(p, camino, len, v);
       pila_destruir_todo(p, free);
-      *coste = pesos[v];
+      if (coste) *coste = pesos[v];
       return camino;
 }
 
