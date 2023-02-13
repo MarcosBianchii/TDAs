@@ -72,10 +72,10 @@ P1(0,4): %s\n\
 P2(1,4): %s\n\
 P3(2,2): %s\n\
 P4(3,2): %s\n",
-p1 == true ? VERDE"true"BLANCO : ROJO"false"BLANCO,
-p2 == true ? VERDE"true"BLANCO : ROJO"false"BLANCO,
-p3 == true ? VERDE"true"BLANCO : ROJO"false"BLANCO,
-p4 == true ? VERDE"true"BLANCO : ROJO"false"BLANCO);
+p1 ? VERDE"true"BLANCO : ROJO"false"BLANCO,
+p2 ? VERDE"true"BLANCO : ROJO"false"BLANCO,
+p3 ? VERDE"true"BLANCO : ROJO"false"BLANCO,
+p4 ? VERDE"true"BLANCO : ROJO"false"BLANCO);
 
       grafo_imprimir(g);
       grafo_destruir(g);
