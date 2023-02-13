@@ -9,7 +9,7 @@
 
 typedef struct Celda {
       int peso;
-      bool existe:1;
+      bool existe;
 } celda_t;
 
 // struct de Grafo con matriz de adyacencia.
