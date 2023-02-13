@@ -362,7 +362,9 @@ void prueba_grafo_dijkstra()
                   printf("%d ", dist[i]);
             printf("\n");
             free(dist);
-      } else printf("No hay camino entre %i y %i\n", u, v);
+      }
+      
+      else printf("No hay camino entre %i y %i\n", u, v);
 
       grafo_destruir(g);
 }
@@ -381,6 +383,6 @@ int main()
       // prueba_grafo_BFS();
       // prueba_grafo_kruskal();
       // prueba_grafo_prim();
-      prueba_grafo_dijkstra();
+      // prueba_grafo_dijkstra();
       return 0;
 }
