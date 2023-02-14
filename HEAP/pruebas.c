@@ -81,7 +81,7 @@ void pruebas_heap_tamanio()
       heap_destruir(h);
 }
 
-void pruebas_heapify()
+void pruebas_heapsort()
 {
       int tope = 10;
       void **vector = malloc(sizeof(void *) * tope);
@@ -115,7 +115,7 @@ int main()
       pruebas_heap_insertar();
       pruebas_heap_quitar();
       pruebas_heap_tamanio();
-      pruebas_heapify();
+      pruebas_heapsort();
 
       return 0;
 }
