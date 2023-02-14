@@ -51,7 +51,7 @@ int grafo_tamanio(grafo_t *g);
 void grafo_imprimir(grafo_t *g);
 
 // Devuelve un grafo complementario a g.
-grafo_t *grafo_complementar(grafo_t *g);
+bool grafo_complementar(grafo_t *g);
 
 // Recorre el Grafo en profundidad de u a v.
 // Devuelve un arreglo con el recorrido y su tope en len.

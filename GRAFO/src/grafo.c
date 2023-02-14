@@ -173,20 +173,18 @@ void grafo_imprimir(grafo_t *g)
       printf("\nn: %i | m: %i\n\n", g->n, g->m);
 }
 
-grafo_t *grafo_complementar(grafo_t *g)
+bool grafo_complementar(grafo_t *g)
 {
-      if (!g) return NULL;
+      if (!g) return false;
 
-      grafo_t *c = grafo_crear(g->n);
-      if (!c) return NULL;
-
-      c->m = g->n * (g->n - 1) / 2 - g->m;
+      g->m = g->n * (g->n - 1) / 2 - g->m;
 
       for (int i = 0; i < g->n; i++)
             for (int j = 0; j <= i; j++)
-                  if (i != j && !grafo_existe_arista(g, i, j))
-                        c->matriz[i][j].existe = true;
-      return c;
+                  if (i != j)
+                        g->matriz[i][j].existe = !g->matriz[i][j].existe;
+
+      return true;
 }
 
 static void grafo_DFS_rec(grafo_t *g, pila_t *p, int u, int v, int *array, char *visitados, int *len)

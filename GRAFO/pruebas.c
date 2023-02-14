@@ -145,12 +145,12 @@ void prueba_grafo_complementar()
 
       grafo_imprimir(g);
 
-      grafo_t *c = grafo_complementar(g);
-
-      grafo_imprimir(c);
+      grafo_complementar(g);
+      grafo_imprimir(g);
+      grafo_complementar(g);
+      grafo_imprimir(g);
 
       grafo_destruir(g);
-      grafo_destruir(c);
 }
 
 void prueba_grafo_DFS()
@@ -376,7 +376,7 @@ int main()
       // prueba_grafo_peso_arista();
       // prueba_grafo();
       // prueba_grafo_imprimir();
-      // prueba_grafo_complementar();
+      prueba_grafo_complementar();
       // prueba_grafo_DFS();
       // prueba_grafo_BFS();
       // prueba_grafo_kruskal();
