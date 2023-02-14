@@ -15,11 +15,10 @@ digrafo_t *digrafo_crear(int n)
 
       d->n = n;
       d->m = 0;
-
       return d;
 }
 
-//    Devuelve true si la posicion en la lista existe.
+// Devuelve true si los vertices estan dentro del intervalo [0, n-1].
 static bool dentro_de_rango(digrafo_t *d, int a, int b)
 {
       return a >= 0 && a < d->n && b >= 0 && b < d->n;
@@ -42,7 +41,7 @@ digrafo_t *digrafo_agregar_arista(digrafo_t *d, int v1, int v2, int peso)
       return d;
 }
 
-//    Elimina un nodo de la lista de nodos.
+// Elimina un nodo de la lista de vertices.
 static nodo_t *search_and_destroy(nodo_t *actual, int v0, int *peso)
 {
       if (!actual) return NULL;
@@ -69,8 +68,7 @@ int digrafo_borrar_arista(digrafo_t *d, int v1, int v2)
       return peso;
 }
 
-//    Itera la lista de adyacencia aplicando
-//    una funciona cada nodo.
+// Itera la lista de adyacencia aplicando una funciona cada nodo.
 static int iterar_lista(nodo_t *nodo, int v0, void (*f)(void *))
 {
       if (!nodo) return -1;
@@ -89,9 +87,7 @@ bool digrafo_existe_arista(digrafo_t *d, int v1, int v2)
       if (!d || !dentro_de_rango(d, v1, v2))
             return false;
 
-      if (iterar_lista(d->lista[v1], v2, NULL) < 0)
-            return false;
-      else  return true;
+      return iterar_lista(d->lista[v1], v2, NULL) >= 0;
 }
 
 int digrafo_peso_arista(digrafo_t *d, int v1, int v2)
