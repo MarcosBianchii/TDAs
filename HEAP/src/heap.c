@@ -110,19 +110,11 @@ bool heap_vacio(heap_t *h)
 }
 
 void heap_destruir(heap_t *h)
-/*
-//    Libera la memoria reservada
-//    por heap_crear().
-*/
 {
       heap_destruir_todo(h, NULL);
 }
 
 void heap_destruir_todo(heap_t *h, void (*f)(void *))
-/*
-//    Libera la memoria reservada por heap_crear()
-//    y sus elementos.
-*/
 {
       if (!h) return;
 
@@ -135,9 +127,6 @@ void heap_destruir_todo(heap_t *h, void (*f)(void *))
 }
 
 void heapsort(void **v, int (*cmp)(void *, void *), int n)
-/*
-//    Heapsort.
-*/
 {
       for (int i = n/2-1; i >= 0; i--)
             sift_down(v, cmp, n, i);

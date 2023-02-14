@@ -38,29 +38,32 @@ static void sift_down(void **v, int (*cmp)(void *, void *), int tope, int i)
 heap_t *heap_crear(heap_comparador cmp, int n)
 {
       if (!cmp) return NULL;
-      if (n > 10) n = 10;
+      if (n < 10) n = 10;
 
       heap_t *h = malloc(sizeof(heap_t));
       if (!h) return NULL;
 
       h->vector = malloc(sizeof(void *) * n);
-      if (!h->vector) return NULL;
+      if (!h->vector) {
+            free(h);
+            return NULL;
+      }
 
       h->cmp = cmp;
-      h->size = n;
       h->tamanio = 0;
+      h->capacidad = n;
 
       return h;
 }
 
 static heap_t *heap_agrandar(heap_t *h)
 {
-      int nuevo_size = h->size * 2;
-      void *bloque = realloc(h->vector, sizeof(void *) * nuevo_size);
+      size_t nueva_capacidad = h->capacidad * 2;
+      void *bloque = realloc(h->vector, sizeof(void *) * nueva_capacidad);
       if (!bloque) return NULL;
 
       h->vector = bloque;
-      h->size = nuevo_size;
+      h->capacidad = nueva_capacidad;
 
       return h;
 }
@@ -69,7 +72,7 @@ heap_t *heap_insertar(heap_t *h, void *item)
 {
       if (!h) return NULL;
 
-      if (h->tamanio == h->size)
+      if (h->tamanio == h->capacidad)
             heap_agrandar(h);
 
       h->vector[h->tamanio] = item;
