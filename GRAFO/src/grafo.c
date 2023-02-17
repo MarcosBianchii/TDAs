@@ -290,7 +290,7 @@ int *grafo_BFS(grafo_t *g, int u, int v, int *len)
       return array;
 }
 
-static bool grafo_ciclo_rec(grafo_t *g, char visitados[], int v, int v0)
+static bool grafo_ciclo_rec(grafo_t *g, bool visitados[], int v, int v0)
 {
       visitados[v] = true;
       
@@ -324,7 +324,7 @@ static int comparador_arista(void *a, void *b)
       return ((arista_t *)b)->peso - ((arista_t *)a)->peso;
 }
 
-static grafo_t *prim_rec(grafo_t *g, grafo_t *p, heap_t *h, char visitados[], int v0)
+static grafo_t *prim_rec(grafo_t *g, grafo_t *p, heap_t *h, bool visitados[], int v0)
 {
       visitados[v0] = 1;
 
@@ -371,7 +371,7 @@ grafo_t *grafo_prim(grafo_t *g, int v0)
             return NULL;
       }
 
-      char visitados[p->n];
+      bool visitados[p->n];
       memset(visitados, 0, sizeof(visitados));
       p = prim_rec(g, p, h, visitados, v0);
       heap_destruir_todo(h, free);
@@ -409,7 +409,7 @@ grafo_t *grafo_kruskal(grafo_t *g)
       while (!heap_vacio(h) && k->m < k->n - 1) {
             arista_t *a = heap_quitar(h);
             grafo_agregar_arista(k, a->u, a->v, a->peso);
-            
+
             if (grafo_ciclo(k, a->u))
                   grafo_eliminar_arista(k, a->u, a->v);
 
@@ -420,7 +420,7 @@ grafo_t *grafo_kruskal(grafo_t *g)
       return k;
 }
 
-static bool dijkstra(grafo_t *g, int u, int v, heap_t *h, char visitados[], int anterior[], float pesos[])
+static bool dijkstra(grafo_t *g, int u, int v, heap_t *h, bool visitados[], int anterior[], float pesos[])
 {
       if (u == v) return true;
 
@@ -491,7 +491,7 @@ int *grafo_dijkstra(grafo_t *g, int u, int v, int *len, int *coste)
             return NULL;
       }
 
-      char visitados[g->n];
+      bool visitados[g->n];
       int anterior[g->n];
       float pesos[g->n];
       memset(visitados, 0, sizeof(visitados));
