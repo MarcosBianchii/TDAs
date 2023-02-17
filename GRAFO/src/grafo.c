@@ -408,13 +408,8 @@ grafo_t *grafo_kruskal(grafo_t *g)
 
       while (!heap_vacio(h) && k->m < k->n - 1) {
             arista_t *a = heap_quitar(h);
-            if (!a) {
-                  grafo_destruir(k);
-                  heap_destruir_todo(h, free);
-                  return NULL;
-            }
-
             grafo_agregar_arista(k, a->u, a->v, a->peso);
+            
             if (grafo_ciclo(k, a->u))
                   grafo_eliminar_arista(k, a->u, a->v);
 
