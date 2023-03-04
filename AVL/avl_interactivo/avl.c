@@ -214,9 +214,9 @@ static void avl_destruir_todo_rec(nodo_t *raiz, void (*f)(void *)) {
       free(raiz);
 }
 
-void avl_destruir_todo(avl_t *avl, void (*f)(void *)) {
+void avl_destruir_todo(avl_t *avl, void (*destructor)(void *)) {
       if (!avl) return;
       
-      avl_destruir_todo_rec(avl->raiz, f);
+      avl_destruir_todo_rec(avl->raiz, destructor);
       free(avl);
 }
