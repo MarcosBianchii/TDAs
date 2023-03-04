@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef enum { INORDEN, PREORDEN, POSTORDEN } avl_recorrido;
+typedef enum { PREORDEN, INORDEN, POSTORDEN } avl_recorrido;
 
 typedef int (*comparador_avl)(void *, void *);
 
