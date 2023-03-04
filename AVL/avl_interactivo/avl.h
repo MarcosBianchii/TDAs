@@ -49,6 +49,6 @@ void avl_recorrer_con_funcion(avl_t *avl, avl_recorrido recorrido, bool (*f)(voi
 void avl_destruir(avl_t *avl);
 
 // Libera la memoria utilizada por el AVL y sus elementos.
-void avl_destruir_todo(avl_t *avl, void (*f)(void *));
+void avl_destruir_todo(avl_t *avl, void (*destructor)(void *));
 
 #endif // __AVL_H__

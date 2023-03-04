@@ -31,7 +31,7 @@ static nodo_t *rotacion_derecha(nodo_t *);
 
 static nodo_t *rotacion_izquierda(nodo_t *raiz) {
       if (validar_doble_rotacion(raiz, raiz->der))
-            raiz = rotacion_derecha(raiz->der);
+            raiz->der = rotacion_derecha(raiz->der);
 
       nodo_t *hijo_der = raiz->der;
       raiz->der = hijo_der->izq;
@@ -43,7 +43,7 @@ static nodo_t *rotacion_izquierda(nodo_t *raiz) {
 
 static nodo_t *rotacion_derecha(nodo_t *raiz) {
       if (validar_doble_rotacion(raiz, raiz->izq))
-            raiz = rotacion_izquierda(raiz->izq);
+            raiz->izq = rotacion_izquierda(raiz->izq);
 
       nodo_t *hijo_izq = raiz->izq;
       raiz->izq = hijo_izq->der;
@@ -95,7 +95,7 @@ static nodo_t *obtener_predecesor(nodo_t *raiz, nodo_t **predecesor) {
       }
 
       raiz->der = obtener_predecesor(raiz->der, predecesor);
-      raiz->altura_der = max_altura(raiz->der) + 1;
+      raiz->altura_der = !raiz->der ? 0 : max_altura(raiz->der) + 1;
       return raiz;
 }
 
@@ -105,12 +105,12 @@ static nodo_t *avl_quitar_rec(avl_t *avl, nodo_t *raiz, void *elemento, void **i
       int cmp = avl->cmp(raiz->valor, elemento);
       if (cmp > 0) {
             raiz->izq = avl_quitar_rec(avl, raiz->izq, elemento, item_a_quitar);
-            raiz->altura_izq = max_altura(raiz->izq);
+            raiz->altura_izq = !raiz->izq ? 0 : max_altura(raiz->izq) + 1;
       }
 
       else if (cmp < 0) {
             raiz->der = avl_quitar_rec(avl, raiz->der, elemento, item_a_quitar);
-            raiz->altura_der = max_altura(raiz->der);
+            raiz->altura_der = !raiz->der ? 0 : max_altura(raiz->der) + 1;
       }
 
       else do {
@@ -121,15 +121,16 @@ static nodo_t *avl_quitar_rec(avl_t *avl, nodo_t *raiz, void *elemento, void **i
             nodo_t *der = raiz->der;
             if (izq && der) {
                   nodo_t *predecesor = NULL;
-                  obtener_predecesor(raiz->izq, &predecesor);
+                  raiz->izq = obtener_predecesor(raiz->izq, &predecesor);
                   raiz->valor = predecesor->valor;
-                  raiz->altura_izq = max_altura(raiz->izq);
+                  raiz->altura_izq = !raiz->izq ? 0 : max_altura(raiz->izq) + 1;
                   free(predecesor);
                   break;
             }
 
             free(raiz);
-            raiz = izq ? izq : der;            
+            raiz = izq ? izq : der;
+
       } while (false);
 
       int dif_altura = diferencia_altura(raiz);

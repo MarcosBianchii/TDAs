@@ -36,25 +36,22 @@ void pruebas_avl_insertar() {
 }
 
 void pruebas_avl_quitar() {
-      avl_t *avl = avl_crear(comparador_str);
-      int i = 0; avl_insertar(avl, &i);
-      int j = 0; avl_insertar(avl, &j);
-      int k = 0; avl_insertar(avl, &k);
+      avl_t *avl = avl_crear(comparador);
+      for (int i = 0; i < 100; i++) {
+            int *valor = malloc(sizeof(int));
+            *valor = i;
+            avl_insertar(avl, valor);
+      }
 
-      printf("El tamanio es = %li\n", avl_tamanio(avl));
-      printf("El arbol esta vacio = %s\n", avl_vacio(avl) ? "true" : "false");
-      int *elemento = avl_quitar(avl, &i);
-      printf("El tamanio es = %li\n", avl_tamanio(avl));
-      printf("El arbol esta vacio = %s\n", avl_vacio(avl) ? "true" : "false");
-      printf("El elemento es = %i\n", *elemento);
-      elemento = avl_quitar(avl, &i);
-      elemento = avl_quitar(avl, &i);
-      elemento = avl_quitar(avl, &i);
-      elemento = avl_quitar(avl, &i);
-      elemento = avl_quitar(avl, &i);
-      elemento = avl_quitar(avl, &i);
-      printf("\n");
-      avl_destruir(avl);
+      printf("tamanio = %li\n", avl_tamanio(avl));
+      for (int i = 0; i < 100; i+=3) {
+            int *valor = avl_quitar(avl, &i);
+            if (!valor) continue;
+            printf("valor = %i\n", *valor);
+            free(valor);
+      }
+
+      avl_destruir_todo(avl, free);
 }
 
 void pruebas_avl_buscar() {
@@ -70,10 +67,10 @@ void pruebas_avl_buscar() {
 }
 
 int main() {
-      pruebas_avl_crear();
-      pruebas_avl_insertar();
-      pruebas_avl_quitar();
-      pruebas_avl_buscar();
+      // pruebas_avl_crear();
+      // pruebas_avl_insertar();
+      // pruebas_avl_quitar();
+      // pruebas_avl_buscar();
 
       return 0;
 }
