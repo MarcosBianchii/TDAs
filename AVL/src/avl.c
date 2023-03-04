@@ -182,22 +182,23 @@ size_t avl_tamanio(avl_t *avl) {
       return avl->tamanio;
 }
 
-static void avl_recorrido_rec(avl_t *avl, nodo_t *raiz, avl_recorrido recorrido, bool (*f)(void *)) {
-      if (!raiz) return;
+static void avl_recorrido_rec(avl_t *avl, nodo_t *raiz, avl_recorrido recorrido, bool (*f)(void *), bool *exit) {
+      if (!raiz || *exit) return;
 
       if (recorrido == PREORDEN)
-            if (f(raiz->valor)) return;
-      avl_recorrido_rec(avl, raiz->izq, recorrido, f);
+            if (f(raiz->valor)) *exit = true;
+      avl_recorrido_rec(avl, raiz->izq, recorrido, f, exit);
       if (recorrido == INORDEN)
-            if (f(raiz->valor)) return;
-      avl_recorrido_rec(avl, raiz->der, recorrido, f);
+            if (f(raiz->valor)) *exit = true;
+      avl_recorrido_rec(avl, raiz->der, recorrido, f, exit);
       if (recorrido == POSTORDEN)
-            if (f(raiz->valor)) return;
+            if (f(raiz->valor)) *exit = true;
 }
 
 void avl_recorrer_con_funcion(avl_t *avl, avl_recorrido recorrido, bool (*f)(void *)) {
       if (!avl || !f) return;
-      avl_recorrido_rec(avl, avl->raiz, recorrido, f);
+      bool exit = false;
+      avl_recorrido_rec(avl, avl->raiz, recorrido, f, &exit);
 }
 
 void avl_destruir(avl_t *avl) {
