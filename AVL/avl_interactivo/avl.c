@@ -18,10 +18,10 @@ static int max_altura(nodo_t *nodo) {
 }
 
 static bool validar_doble_rotacion(nodo_t *padre, nodo_t *hijo) {
-      if (diferencia_altura(padre) < 0 &&  diferencia_altura(hijo) > 0)
+      if (diferencia_altura(padre) < 0 && diferencia_altura(hijo) > 0)
             return true;
       
-      if (diferencia_altura(padre) > 0 &&  diferencia_altura(hijo) < 0)
+      if (diferencia_altura(padre) > 0 && diferencia_altura(hijo) < 0)
             return true;
       
       return false;
