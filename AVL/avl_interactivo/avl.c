@@ -96,6 +96,14 @@ static nodo_t *obtener_predecesor(nodo_t *raiz, nodo_t **predecesor) {
 
       raiz->der = obtener_predecesor(raiz->der, predecesor);
       raiz->altura_der = !raiz->der ? 0 : max_altura(raiz->der) + 1;
+
+      int dif_altura = diferencia_altura(raiz);
+      if (dif_altura < -1)
+            raiz = rotacion_izquierda(raiz);
+
+      else if (dif_altura > 1)
+            raiz = rotacion_derecha(raiz);
+
       return raiz;
 }
 
@@ -130,7 +138,7 @@ static nodo_t *avl_quitar_rec(avl_t *avl, nodo_t *raiz, void *elemento, void **i
 
             free(raiz);
             raiz = izq ? izq : der;
-
+            
       } while (false);
 
       int dif_altura = diferencia_altura(raiz);
