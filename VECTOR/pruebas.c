@@ -1,5 +1,12 @@
 #include "src/vector.h"
 #include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Vector {
+      void **data;
+      size_t tamanio;
+      size_t capacidad;
+} vector_t;
 
 void pruebas_vector_crear()
 {
@@ -166,6 +173,5 @@ int main()
       // pruebas_vector_vacio();
       // pruebas_vector_push();
       // pruebas_vector_pop();
-
       return 0;
 }

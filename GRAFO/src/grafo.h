@@ -2,28 +2,8 @@
 #define __GRAFO_H__
 
 #include <stdbool.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
 
-typedef struct Celda {
-      int peso;
-      bool existe;
-} celda_t;
-
-// struct de Grafo con matriz de adyacencia.
-typedef struct Grafo {
-      celda_t **matriz;
-      int n;
-      int m;
-} grafo_t;
-
-#define NEGRO    "\033[0;30m"
-#define ROJO     "\033[0;31m"
-#define VERDE    "\033[0;32m"
-#define AMARILLO "\033[0;33m"
-#define BLANCO   "\033[0;37m"
+typedef struct Grafo grafo_t;
 
 // Reserva memoria para un grafo de n vertices.
 grafo_t *grafo_crear(int n);

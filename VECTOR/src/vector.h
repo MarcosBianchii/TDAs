@@ -1,14 +1,9 @@
 #ifndef __VECTOR_H__
 #define __VECTOR_H__
 
-#include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct Vector {
-      void **data;
-      size_t tamanio;
-      size_t capacidad;
-} vector_t;
+typedef struct Vector vector_t;
 
 // Crea un vector.
 vector_t *vector_crear(int capacidad);

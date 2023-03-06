@@ -1,18 +1,11 @@
 #ifndef __HEAP_H__
 #define __HEAP_H__
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdbool.h>
 
 typedef int (*heap_comparador)(void *, void *);
 
-typedef struct Heap {
-      void **vector;
-      size_t tamanio;
-      size_t capacidad;
-      heap_comparador cmp;
-} heap_t;
+typedef struct Heap heap_t;
 
 // Reserva memoria para un heap.
 //

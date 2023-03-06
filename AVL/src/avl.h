@@ -1,27 +1,13 @@
 #ifndef __AVL_H__
 #define __AVL_H__
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
 
 typedef enum { PREORDEN, INORDEN, POSTORDEN } avl_recorrido;
 
 typedef int (*comparador_avl)(void *, void *);
 
-typedef struct nodo {
-      int altura_izq;
-      int altura_der;
-      void *valor;
-      struct nodo *izq;
-      struct nodo *der;
-} nodo_t;
-
-typedef struct avl {
-      nodo_t *raiz;
-      size_t tamanio;
-      comparador_avl cmp;
-} avl_t;
+typedef struct avl avl_t;
 
 // Devuelve una estructura de arbol AVL.
 avl_t *avl_crear(comparador_avl cmp);

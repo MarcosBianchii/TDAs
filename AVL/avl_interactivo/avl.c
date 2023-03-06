@@ -1,4 +1,20 @@
 #include "avl.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct nodo {
+      int altura_izq;
+      int altura_der;
+      void *valor;
+      struct nodo *izq;
+      struct nodo *der;
+} nodo_t;
+
+typedef struct avl {
+      nodo_t *raiz;
+      size_t tamanio;
+      comparador_avl cmp;
+} avl_t;
 
 avl_t *avl_crear(comparador_avl cmp) {
       if (!cmp) return NULL;

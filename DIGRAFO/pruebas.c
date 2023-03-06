@@ -120,4 +120,5 @@ int main()
       pruebas_digrafo_existe_arista();
       pruebas_digrafo_borrar_arista();
       pruebas_digrafo_peso_arista();
+      return 0;
 }

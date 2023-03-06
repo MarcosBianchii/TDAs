@@ -2,36 +2,8 @@
 #define __DIGRAFO_H__
 
 #include <stdbool.h>
-#include <stdlib.h>
-#include <stdio.h>
 
-/*
-//    Struct de Nodo
-//    para la lista
-//    del digrafo.
-*/
-typedef struct Nodo {
-      int peso;
-      int vertice;
-      struct Nodo *siguiente;
-} nodo_t;
-
-/*
-//    Struct de Digrafo
-//    con lista de adyacencia.
-*/
-typedef struct Digrafo {
-      nodo_t **lista;
-      int n;
-      int m;
-} digrafo_t;
-
-#define NEGRO    "\033[0;30m"
-#define ROJO     "\033[0;31m"
-#define VERDE    "\033[0;32m"
-#define AMARILLO "\033[0;33m"
-#define BLANCO   "\033[0;37m"
-
+typedef struct Digrafo digrafo_t;
 
 // Reserva memoria para un digrafo.
 digrafo_t *digrafo_crear(int n);

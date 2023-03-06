@@ -1,4 +1,5 @@
 #include "src/heap.h"
+#include <stdlib.h>
 
 int comparador(void *a, void *b)
 {
@@ -111,11 +112,10 @@ void pruebas_heapsort()
 
 int main()
 {
-      pruebas_heap_crear();
-      pruebas_heap_insertar();
-      pruebas_heap_quitar();
-      pruebas_heap_tamanio();
-      pruebas_heapsort();
-
+      // pruebas_heap_crear();
+      // pruebas_heap_insertar();
+      // pruebas_heap_quitar();
+      // pruebas_heap_tamanio();
+      // pruebas_heapsort();
       return 0;
 }

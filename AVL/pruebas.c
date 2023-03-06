@@ -1,5 +1,6 @@
 #include "src/avl.h"
 #include "string.h"
+#include <stdlib.h>
 
 int comparador(void *i, void *j) {
       if (!i && !j) return 0;
@@ -71,6 +72,5 @@ int main() {
       // pruebas_avl_insertar();
       // pruebas_avl_quitar();
       // pruebas_avl_buscar();
-
       return 0;
 }

@@ -1,4 +1,12 @@
 #include "heap.h"
+#include <stdlib.h>
+
+typedef struct Heap {
+      void **vector;
+      size_t tamanio;
+      size_t capacidad;
+      heap_comparador cmp;
+} heap_t;
 
 static void swap(void **a, void **b)
 {

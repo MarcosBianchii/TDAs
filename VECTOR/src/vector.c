@@ -1,4 +1,11 @@
 #include "vector.h"
+#include <stdlib.h>
+
+typedef struct Vector {
+      void **data;
+      size_t tamanio;
+      size_t capacidad;
+} vector_t;
 
 vector_t *vector_crear(int capacidad)
 {

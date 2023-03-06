@@ -1,4 +1,24 @@
 #include "digrafo.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+#define NEGRO    "\033[0;30m"
+#define ROJO     "\033[0;31m"
+#define VERDE    "\033[0;32m"
+#define AMARILLO "\033[0;33m"
+#define BLANCO   "\033[0;37m"
+
+typedef struct Nodo {
+      int peso;
+      int vertice;
+      struct Nodo *siguiente;
+} nodo_t;
+
+typedef struct Digrafo {
+      nodo_t **lista;
+      int n;
+      int m;
+} digrafo_t;
 
 digrafo_t *digrafo_crear(int n)
 {
