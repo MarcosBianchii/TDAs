@@ -58,7 +58,7 @@ char *str_add(string *str, char c) {
 char *str_insert(string *str, const char *src, size_t pos) {
       if (!str || !src) return NULL;
 
-      pos = pos >= str->len ? str->len : (pos <= 0 ? 0 : pos);
+      pos = pos >= str->len ? str->len : (pos < 0 ? 0 : pos);
       int src_len = strlen(src);
       str_resize(str, str->len + src_len + 1);
 
@@ -83,7 +83,7 @@ char *str_insert(string *str, const char *src, size_t pos) {
 char *str_remove(string *str, size_t pos, size_t n) {
       if (!str || n <= 0) return NULL;
 
-      pos = pos >= str->len ? str->len - n : (pos <= 0 ? 0 : pos);
+      pos = pos >= str->len ? str->len - n : (pos < 0 ? 0 : pos);
       n = pos + n > str->len ? str->len - pos : n;
       int diff = str->len - pos - n;
 
@@ -109,8 +109,9 @@ char *str_replace(string *str, const char *replace, size_t pos, size_t n) {
       if (!str || !replace) return NULL;
 
       n = MAX(strlen(replace), n);
-      str_remove(str, pos, n);
-      str_insert(str, replace, pos);
+      if (!str_remove(str, pos, n)
+      ||  !str_insert(str, replace, pos))
+            return NULL;
 
       return str->data;
 }
@@ -133,10 +134,8 @@ char *str_cpy(string *dst, string *src) {
       if (!str_resize(dst, src->len + 1))
             return NULL;
 
-      if (!strncpy(dst->data, src->data, src->len)) {
-            str_resize(dst, src->len + 1);
+      if (!strncpy(dst->data, src->data, src->len))
             return NULL;
-      }
 
       dst->len = src->len;
       dst->data[dst->len] = '\0';
@@ -153,10 +152,8 @@ char *strc_cpy(string *dst, const char *csrc, size_t n) {
       if (!str_resize(dst, min_value + 1))
             return NULL;
 
-      if (!strncpy(dst->data, csrc, min_value)) {
-            str_resize(dst, min_value + 1);
+      if (!strncpy(dst->data, csrc, min_value))
             return NULL;
-      }
       
       dst->len = min_value;
       dst->data[dst->len] = '\0';
@@ -169,10 +166,8 @@ char *str_cat(string *dst, string *src) {
       if (!str_resize(dst, dst->len + src->len + 1))
             return NULL;
       
-      if (!strncat(dst->data, src->data, src->len)) {
-            str_resize(dst, dst->len - src->len + 1);
+      if (!strncat(dst->data, src->data, src->len))
             return NULL;
-      }
 
       dst->len += src->len;
       dst->data[dst->len] = '\0';
@@ -189,10 +184,8 @@ char *strc_cat(string *dst, const char *csrc, size_t n) {
       if (!str_resize(dst, dst->len + min_value + 1))
             return NULL;
       
-      if (!strncat(dst->data, csrc, min_value)) {
-            str_resize(dst, dst->len - min_value + 1);
+      if (!strncat(dst->data, csrc, min_value))
             return NULL;
-      }
       
       dst->len += min_value;
       dst->data[dst->len] = '\0';
