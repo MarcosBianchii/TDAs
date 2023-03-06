@@ -130,9 +130,13 @@ int strc_cmp(string *str, const char *cstr, size_t n) {
 char *str_cpy(string *dst, string *src) {
       if (!src || !dst) return NULL;
 
-      if (!str_resize(dst, src->len + 1)
-      ||  !strncpy(dst->data, src->data, src->len))
+      if (!str_resize(dst, src->len + 1))
             return NULL;
+
+      if (!strncpy(dst->data, src->data, src->len)) {
+            str_resize(dst, src->len + 1);
+            return NULL;
+      }
 
       dst->len = src->len;
       dst->data[dst->len] = '\0';
@@ -146,9 +150,13 @@ char *strc_cpy(string *dst, const char *csrc, size_t n) {
       if (n <= 0) n = src_len;
 
       int min_value = MIN(src_len, n);
-      if (!str_resize(dst, min_value + 1)
-      ||  !strncpy(dst->data, csrc, min_value))
+      if (!str_resize(dst, min_value + 1))
             return NULL;
+
+      if (!strncpy(dst->data, csrc, min_value)) {
+            str_resize(dst, min_value + 1);
+            return NULL;
+      }
       
       dst->len = min_value;
       dst->data[dst->len] = '\0';
@@ -158,10 +166,14 @@ char *strc_cpy(string *dst, const char *csrc, size_t n) {
 char *str_cat(string *dst, string *src) {
       if (!dst || !src) return NULL;
 
-      if (!str_resize(dst, dst->len + src->len + 1)
-      ||  !strncat(dst->data, src->data, src->len))
+      if (!str_resize(dst, dst->len + src->len + 1))
             return NULL;
       
+      if (!strncat(dst->data, src->data, src->len)) {
+            str_resize(dst, dst->len - src->len + 1);
+            return NULL;
+      }
+
       dst->len += src->len;
       dst->data[dst->len] = '\0';
       return dst->data;
@@ -174,9 +186,13 @@ char *strc_cat(string *dst, const char *csrc, size_t n) {
       if (n <= 0) n = src_len;
 
       int min_value = MIN(src_len, n);
-      if (!str_resize(dst, dst->len + min_value + 1)
-      ||  !strncat(dst->data, csrc, min_value))
+      if (!str_resize(dst, dst->len + min_value + 1))
             return NULL;
+      
+      if (!strncat(dst->data, csrc, min_value)) {
+            str_resize(dst, dst->len - min_value + 1);
+            return NULL;
+      }
       
       dst->len += min_value;
       dst->data[dst->len] = '\0';
