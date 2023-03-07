@@ -43,7 +43,7 @@ static int str_resize(string *str, size_t new_cap) {
       return 1;
 }
 
-char *str_add(string *str, char c) {
+string *str_add(string *str, char c) {
       if (!str) return NULL;
 
       if (!str_resize(str, str->len + 2))
@@ -52,10 +52,20 @@ char *str_add(string *str, char c) {
       str->data[str->len++] = c;
       str->data[str->len] = '\0';
 
-      return str->data;
+      return str;
 }
 
-char *str_insert(string *str, const char *src, size_t pos) {
+string *str_sub(string *str) {
+      if (!str || str->len <= 0) return NULL;
+
+      if (!str_resize(str, str->len))
+            return NULL;
+
+      str->data[--str->len] = '\0';
+      return str;
+}
+
+char *strc_insert(string *str, const char *src, size_t pos) {
       if (!str || !src) return NULL;
 
       pos = pos >= str->len ? str->len : (pos < 0 ? 0 : pos);
@@ -80,7 +90,16 @@ char *str_insert(string *str, const char *src, size_t pos) {
       return str->data;
 }
 
-char *str_remove(string *str, size_t pos, size_t n) {
+string *str_insert(string *str, string *src, size_t pos) {
+      if (!str || !src) return NULL;
+
+      if (!strc_insert(str, src->data, pos))
+            return NULL;
+      
+      return str;
+}
+
+string *str_remove(string *str, size_t pos, size_t n) {
       if (!str || n <= 0) return NULL;
 
       pos = pos >= str->len ? str->len - n : (pos < 0 ? 0 : pos);
@@ -97,7 +116,7 @@ char *str_remove(string *str, size_t pos, size_t n) {
       str->len -= n;
       str->data[str->len] = '\0';
 
-      return str->data;
+      return str;
 }
 
 char *str_get(string *str) {
@@ -105,12 +124,29 @@ char *str_get(string *str) {
       return str->data;
 }
 
-char *str_replace(string *str, const char *replace, size_t pos, size_t n) {
+char str_char_at(string *str, size_t pos) {
+      if (!str || pos >= str->len) return '\0';
+      if (pos < 0) pos = 0;
+      return str->data[pos];
+}
+
+string *str_replace(string *str, string *replace, size_t pos, size_t n) {
+      if (!str || !replace) return NULL;
+
+      n = MAX(replace->len, n);
+      if (!str_remove(str, pos, n)
+      ||  !str_insert(str, replace, pos))
+            return NULL;
+      
+      return str;
+}
+
+char *strc_replace(string *str, const char *replace, size_t pos, size_t n) {
       if (!str || !replace) return NULL;
 
       n = MAX(strlen(replace), n);
       if (!str_remove(str, pos, n)
-      ||  !str_insert(str, replace, pos))
+      ||  !strc_insert(str, replace, pos))
             return NULL;
 
       return str->data;
@@ -128,7 +164,7 @@ int strc_cmp(string *str, const char *cstr, size_t n) {
       return strncmp(str->data, cstr, MIN(str->len, MIN(strlen(cstr), n)));
 }
 
-char *str_cpy(string *dst, string *src) {
+string *str_cpy(string *dst, string *src) {
       if (!src || !dst) return NULL;
 
       if (!str_resize(dst, src->len + 1))
@@ -139,7 +175,7 @@ char *str_cpy(string *dst, string *src) {
 
       dst->len = src->len;
       dst->data[dst->len] = '\0';
-      return dst->data;
+      return dst;
 }
 
 char *strc_cpy(string *dst, const char *csrc, size_t n) {
@@ -160,7 +196,7 @@ char *strc_cpy(string *dst, const char *csrc, size_t n) {
       return dst->data;
 }
 
-char *str_cat(string *dst, string *src) {
+string *str_cat(string *dst, string *src) {
       if (!dst || !src) return NULL;
 
       if (!str_resize(dst, dst->len + src->len + 1))
@@ -171,7 +207,7 @@ char *str_cat(string *dst, string *src) {
 
       dst->len += src->len;
       dst->data[dst->len] = '\0';
-      return dst->data;
+      return dst;
 }
 
 char *strc_cat(string *dst, const char *csrc, size_t n) {
@@ -190,6 +226,63 @@ char *strc_cat(string *dst, const char *csrc, size_t n) {
       dst->len += min_value;
       dst->data[dst->len] = '\0';
       return dst->data;
+}
+
+int str_str(string *str, string *substr) {
+      if (!str || !substr) return -1;
+
+      int i = 0;
+      int j = 0;
+      while (i < str->len) {
+            while (str->data[i] == substr->data[j]) {
+                  if (!substr->data[++j])
+                        return i - j + 1;
+                  i++;
+            }
+
+            i++;
+      }
+
+      return -1;
+}
+
+char *strc_str(string *str, const char *substr, size_t n) {
+      if (!str || !substr) return NULL;
+
+      int src_len = strlen(substr);
+      if (n <= 0) n = src_len;
+      char *i = str->data;
+      char *j = (char *)substr;
+      int counter = 0;
+      while (*i) {
+            while (*i == *j) {
+                  if (!*++j || counter == n)
+                        return i - src_len + 1;
+                  i++;
+                  counter++;
+            }
+
+            counter = 0;
+            i++;
+      }
+
+      return NULL;
+}
+
+string *str_dup(string *str) {
+      if (!str) return NULL;
+      return str_new(str->data);
+}
+
+char *strc_dup(string *str, size_t n) {
+      if (!str) return NULL;
+      if (n <= 0) n = str->len;
+
+      char *new_str = malloc(MIN(str->len, n) + 1);
+      if (!new_str) return NULL;
+
+      strncpy(new_str, str->data, MIN(str->len, n));
+      return new_str;
 }
 
 void str_free(string *str) {
