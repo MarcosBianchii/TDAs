@@ -2,6 +2,7 @@
 #define __AVL_H__
 
 #include <stdbool.h>
+#include <stdlib.h>
 
 typedef enum { PREORDEN, INORDEN, POSTORDEN } avl_recorrido;
 

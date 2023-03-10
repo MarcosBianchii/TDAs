@@ -1,5 +1,4 @@
 #include "avl.h"
-#include <stdlib.h>
 
 typedef struct nodo {
       int altura_izq;
@@ -136,7 +135,7 @@ static nodo_t *avl_quitar_rec(avl_t *avl, nodo_t *raiz, void *elemento, void **i
             raiz->altura_der = !raiz->der ? 0 : max_altura(raiz->der) + 1;
       }
 
-      else do {
+      else {
             avl->tamanio--;
             *item_a_quitar = raiz->valor;
 
@@ -148,13 +147,11 @@ static nodo_t *avl_quitar_rec(avl_t *avl, nodo_t *raiz, void *elemento, void **i
                   raiz->valor = predecesor->valor;
                   raiz->altura_izq = !raiz->izq ? 0 : max_altura(raiz->izq) + 1;
                   free(predecesor);
-                  break;
+            } else {
+                  free(raiz);
+                  raiz = izq ? izq : der;
             }
-
-            free(raiz);
-            raiz = izq ? izq : der;
-            
-      } while (false);
+      }
 
       int dif_altura = diferencia_altura(raiz);
       if (dif_altura < -1)

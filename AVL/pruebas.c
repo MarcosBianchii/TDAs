@@ -1,6 +1,6 @@
 #include "src/avl.h"
 #include "string.h"
-#include <stdlib.h>
+#include <stdio.h>
 
 int comparador(void *i, void *j) {
       if (!i && !j) return 0;
