@@ -37,13 +37,8 @@ cache_t *cache_put(cache_t *c, uint64_t p, uint32_t w) {
     node_t *m = node_new(w);
     if (!m) return NULL;
 
-    c->s[p] = m;
     queue_put(c->q, m);
-    if (c->size == c->capacity) {
-        queue_remove(c->q, m);
-        return c;
-    }
-
+    c->s[p] = m;
     c->size++;
     return c;
 }
