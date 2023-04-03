@@ -23,4 +23,7 @@ void cache_clear(cache_t *c);
 // Frees memory used by c.
 void cache_free(cache_t *c);
 
+// Prints the queue of c.
+void cache_print(cache_t *c);
+
 #endif // __LRU_CACHE_H__

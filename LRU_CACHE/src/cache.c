@@ -24,20 +24,12 @@ cache_t *cache_new(uint64_t n) {
     return c;
 }
 
-static node_t *node_new(uint32_t w) {
-    node_t *n = calloc(1, sizeof(node_t));
-    if (!n) return NULL;
-
-    n->word = w;
-    return n;
-}
-
 cache_t *cache_put(cache_t *c, uint64_t p, uint32_t w) {
     if (!c || c->capacity <= p) return NULL;
 
     node_t *n = c->s[p];
     if (n) {
-        n->word = w;
+        node_set(n, w);
         queue_move(c->q, n);
         return c;
     }
@@ -61,7 +53,7 @@ int cache_get(cache_t *c, uint64_t p) {
         return -1;
 
     queue_move(c->q, c->s[p]);
-    return c->s[p]->word;
+    return node_get(c->s[p]);
 }
 
 size_t cache_size(cache_t *c) {

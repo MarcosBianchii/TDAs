@@ -1,6 +1,33 @@
 #include "queue.h"
 #include <stdbool.h>
+#include <stdlib.h>
 #include <stdio.h>
+
+typedef struct Node {
+    uint32_t word;
+    struct Node *prev, *next;
+} node_t;
+
+typedef struct Queue {
+    node_t *head, *tail;
+    size_t size;
+} queue_t;
+
+node_t *node_new(uint32_t w) {
+    node_t *n = calloc(1, sizeof(node_t));
+    if (!n) return NULL;
+
+    n->word = w;
+    return n;
+}
+
+void node_set(node_t *n, uint32_t w) {
+    n->word = w;
+}
+
+uint32_t node_get(node_t *n) {
+    return n->word;
+}
 
 queue_t *queue_new() {
     return calloc(1, sizeof(queue_t));
