@@ -88,11 +88,29 @@ void test_cache_clear() {
     cache_free(c);
 }
 
+void test_cache_full() {
+    cache_t *c = cache_new(3);
+
+    cache_put(c, 0, 10);
+    cache_put(c, 1, 11);
+    cache_put(c, 2, 12);
+    cache_print(c);
+
+    cache_put(c, 3, 13);
+    cache_print(c);
+
+    cache_put(c, 4, 14);
+    cache_print(c);
+
+    cache_free(c);
+}
+
 int main() {
     // test_cache_new();
     // test_cache_put();
     // test_cache_get();
     // test_cache_clear();
+    // test_cache_full();
 
     return 0;
 }
