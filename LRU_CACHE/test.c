@@ -89,18 +89,21 @@ void test_cache_clear() {
 }
 
 void test_cache_full() {
-    cache_t *c = cache_new(3);
+    cache_t *c = cache_new(20);
 
-    cache_put(c, 0, 10);
-    cache_put(c, 1, 11);
-    cache_put(c, 2, 12);
-    cache_print(c);
+    for (int i = 1000000; i >= 0; i--) {
+        cache_put(c, i, i*10);
+    }
 
-    cache_put(c, 3, 13);
     cache_print(c);
+    printf("size = %li\n\n", cache_size(c));
 
-    cache_put(c, 4, 14);
-    cache_print(c);
+    for (int i = 0; i < 3; i++) {
+        cache_print(c);
+        puts("");
+        if (cache_get(c, i) == -1)
+            printf("cache_get(c, %i) == -1\n", i);
+    }
 
     cache_free(c);
 }
@@ -110,7 +113,6 @@ int main() {
     // test_cache_put();
     // test_cache_get();
     // test_cache_clear();
-    // test_cache_full();
-
+    test_cache_full();
     return 0;
 }

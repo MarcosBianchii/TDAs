@@ -4,7 +4,6 @@
 
 typedef struct Cell {
     node_t *node;
-    uint64_t k;
     bool flag;
 } cell_t;
 
@@ -35,13 +34,7 @@ hash_t *hash_new(size_t n) {
 }
 
 static uint64_t traverse_table_put(hash_t *h, uint64_t pos, uint64_t p) {
-    while (h->table[pos].k != p && h->table[pos].node)
-        pos = (pos + 1) % h->capacity;
-    return pos;
-}
-
-static uint64_t traverse_table_get(hash_t *h, uint64_t pos, uint64_t p) {
-    while (h->table[pos].k != p && h->table[pos].node && !h->table[pos].flag)
+    while (h->table[pos].node)
         pos = (pos + 1) % h->capacity;
     return pos;
 }
@@ -49,17 +42,29 @@ static uint64_t traverse_table_get(hash_t *h, uint64_t pos, uint64_t p) {
 void hash_put(hash_t *h, uint64_t p, node_t *n) {
     uint64_t pos = traverse_table_put(h, hash(p) % h->capacity, p);
     h->table[pos].node = n;
-    h->table[pos].k = p;
+}
+
+// TODO: mover el nodo en el hash si su pos inicial esta vacia.
+static uint64_t traverse_table_get(hash_t *h, uint64_t pos, uint64_t p) {
+    uint32_t counter = 0;
+    while (counter++ < h->capacity && (h->table[pos].node || h->table[pos].flag) && node_get_page(h->table[pos].node) != p)
+        pos = (pos + 1) % h->capacity;
+
+    return pos;
 }
 
 node_t *hash_get(hash_t *h, uint64_t p) {
     uint64_t pos = traverse_table_get(h, hash(p) % h->capacity, p);
-    return h->table[pos].k == p ? h->table[pos].node : NULL;
+    return node_get_page(h->table[pos].node) == p ? h->table[pos].node : NULL;
 }
 
 void hash_remove(hash_t *h, uint64_t p) {
     uint64_t pos = traverse_table_get(h, hash(p) % h->capacity, p);
-    if (h->table[pos].k == p) h->table[pos] = (cell_t){0};
+    if (node_get_page(h->table[pos].node) == p)
+        h->table[pos] = (cell_t){
+            .node = NULL,
+            .flag = true,
+        };
 }
 
 void hash_free(hash_t *h) {

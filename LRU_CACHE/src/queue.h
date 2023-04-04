@@ -7,7 +7,7 @@ typedef struct Hash hash_t;
 
 queue_t *queue_new();
 void queue_put(queue_t *q, node_t *n);
-node_t *queue_detach(queue_t *q, node_t *n);
+void queue_detach(queue_t *q, node_t *n);
 void queue_move(queue_t *q, node_t *n, hash_t *h);
 void queue_pop(queue_t *q, hash_t *h);
 void queue_free(queue_t *q);

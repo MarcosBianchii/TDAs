@@ -52,11 +52,13 @@ cache_t *cache_put(cache_t *c, uint64_t p, uint32_t w) {
 }
 
 int cache_get(cache_t *c, uint64_t p) {
-    if (!c || !hash_get(c->h, p))
-        return -1;
+    if (!c) return -1;
 
-    queue_move(c->q, hash_get(c->h, p), c->h);
-    return node_get(hash_get(c->h, p));
+    node_t *n = hash_get(c->h, p);
+    if (!n) return -1;
+
+    queue_move(c->q, n, c->h);
+    return node_get_word(n);
 }
 
 size_t cache_size(cache_t *c) {

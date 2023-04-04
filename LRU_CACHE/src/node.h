@@ -10,6 +10,7 @@ typedef struct Node {
 
 node_t *node_new(uint64_t p, uint32_t w);
 void node_set(node_t *n, uint64_t p, uint32_t w);
-uint32_t node_get(node_t *n);
+uint64_t node_get_page(node_t *n);
+uint32_t node_get_word(node_t *n);
 
 #endif // __NODE_H__

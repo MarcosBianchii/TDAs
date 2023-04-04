@@ -15,6 +15,11 @@ void node_set(node_t *n, uint64_t p, uint32_t w) {
     n->word = w;
 }
 
-uint32_t node_get(node_t *n) {
+uint64_t node_get_page(node_t *n) {
+    if (!n) return -1;
+    return n->page;
+}
+
+uint32_t node_get_word(node_t *n) {
     return n->word;
 }

@@ -30,7 +30,7 @@ void queue_put(queue_t *q, node_t *n) {
     q->head = n;
 }
 
-node_t *queue_detach(queue_t *q, node_t *n) {
+void queue_detach(queue_t *q, node_t *n) {
     if (q->head == n) {
         if (n->next) n->next->prev = NULL;
         q->head = n->next;
@@ -48,7 +48,6 @@ node_t *queue_detach(queue_t *q, node_t *n) {
 
     n->next = NULL;
     n->prev = NULL;
-    return n;
 }
 
 void queue_move(queue_t *q, node_t *n, hash_t *h) {
@@ -83,5 +82,6 @@ void queue_print(queue_t *q) {
         n = n->next;
         if (n) printf(", ");
     }
+    
     puts("]");
 }
