@@ -16,7 +16,7 @@ void test_cache_new() {
 }
 
 void test_cache_put() {
-    cache_t *c = cache_new(5);
+    cache_t *c = cache_new(3);
     cache_put(c, 0, 10);
     cache_print(c);
 
@@ -35,18 +35,6 @@ void test_cache_put() {
     cache_put(c, 5, 15);
     cache_print(c);
 
-    cache_put(c, 6, 16);
-    cache_print(c);
-
-    cache_put(c, -1, 0);
-    cache_print(c);
-
-    cache_put(c, 3, 0);
-    cache_print(c);
-
-    cache_put(c, -1, 100);
-    cache_print(c);
-
     cache_free(c);
 }
 
@@ -61,11 +49,11 @@ void test_cache_get() {
     cache_print(c);
     puts("");
 
-    printf("cache_get(c, 0) = %d\n", cache_get(c, 1));
+    printf("cache_get(c, 1) = %d\n", cache_get(c, 1));
     cache_print(c);
     puts("");
 
-    printf("cache_get(c, 1) = %d\n", cache_get(c, 3));
+    printf("cache_get(c, 3) = %d\n", cache_get(c, 3));
     cache_print(c);
     puts("");
 

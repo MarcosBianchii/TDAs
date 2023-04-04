@@ -1,33 +1,14 @@
+#include "node.h"
 #include "queue.h"
+#include "hash.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
-
-typedef struct Node {
-    uint32_t word;
-    struct Node *prev, *next;
-} node_t;
 
 typedef struct Queue {
     node_t *head, *tail;
     size_t size;
 } queue_t;
-
-node_t *node_new(uint32_t w) {
-    node_t *n = calloc(1, sizeof(node_t));
-    if (!n) return NULL;
-
-    n->word = w;
-    return n;
-}
-
-void node_set(node_t *n, uint32_t w) {
-    n->word = w;
-}
-
-uint32_t node_get(node_t *n) {
-    return n->word;
-}
 
 queue_t *queue_new() {
     return calloc(1, sizeof(queue_t));
@@ -49,28 +30,39 @@ void queue_put(queue_t *q, node_t *n) {
     q->head = n;
 }
 
-void queue_remove(queue_t *q, node_t *n) {
+node_t *queue_detach(queue_t *q, node_t *n) {
     if (q->head == n) {
         if (n->next) n->next->prev = NULL;
         q->head = n->next;
-        return;
     }
 
     else if (q->tail == n) {
         if (n->prev) n->prev->next = NULL;
         q->tail = n->prev;
-        n->prev = NULL;
-        return;
     }
 
-    if (n->prev) n->prev->next = n->next;
-    if (n->next) n->next->prev = n->prev;
+    else {
+        if (n->prev) n->prev->next = n->next;
+        if (n->next) n->next->prev = n->prev;
+    }
+
+    n->next = NULL;
     n->prev = NULL;
+    return n;
 }
 
-void queue_move(queue_t *q, node_t *n) {
-    queue_remove(q, n);
+void queue_move(queue_t *q, node_t *n, hash_t *h) {
+    queue_detach(q, n);
     queue_put(q, n);
+}
+
+void queue_pop(queue_t *q, hash_t *h) {
+    if (queue_empty(q)) return;
+
+    node_t *n = q->tail;
+    hash_remove(h, n->page);
+    queue_detach(q, n);
+    free(n);
 }
 
 void queue_free(queue_t *q) {
@@ -87,7 +79,7 @@ void queue_print(queue_t *q) {
     putc('[', stdout);
     node_t *n = q->head;
     while (n) {
-        printf("%d", n->word);
+        printf("%li:%i", n->page, n->word);
         n = n->next;
         if (n) printf(", ");
     }

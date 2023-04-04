@@ -1,9 +1,11 @@
 #include "cache.h"
 #include "queue.h"
+#include "hash.h"
+#include "node.h"
 
 typedef struct LRU_Cache {
     queue_t *q;
-    node_t **s;
+    hash_t *h;
     size_t capacity;
     size_t size;
 } cache_t;
@@ -13,8 +15,8 @@ cache_t *cache_new(uint64_t n) {
     if (!c) return NULL;
     
     c->q = queue_new();
-    c->s = calloc(n, sizeof(node_t *));
-    if (!c->q || !c->s) {
+    c->h = hash_new(n);
+    if (!c->q || !c->h) {
         queue_free(c->q);
         return NULL;
     }
@@ -25,30 +27,36 @@ cache_t *cache_new(uint64_t n) {
 }
 
 cache_t *cache_put(cache_t *c, uint64_t p, uint32_t w) {
-    if (!c || c->capacity <= p) return NULL;
+    if (!c) return NULL;
 
-    node_t *n = c->s[p];
+    node_t *n = hash_get(c->h, p);
     if (n) {
-        node_set(n, w);
-        queue_move(c->q, n);
+        node_set(n, p, w);
+        queue_move(c->q, n, c->h);
         return c;
     }
     
-    node_t *m = node_new(w);
+    node_t *m = node_new(p, w);
     if (!m) return NULL;
 
     queue_put(c->q, m);
-    c->s[p] = m;
+    hash_put(c->h, p, m);
+
+    if (c->size == c->capacity) {
+        queue_pop(c->q, c->h);
+        return c;
+    }
+
     c->size++;
     return c;
 }
 
 int cache_get(cache_t *c, uint64_t p) {
-    if (!c || c->capacity <= p || !c->s[p])
+    if (!c || !hash_get(c->h, p))
         return -1;
 
-    queue_move(c->q, c->s[p]);
-    return node_get(c->s[p]);
+    queue_move(c->q, hash_get(c->h, p), c->h);
+    return node_get(hash_get(c->h, p));
 }
 
 size_t cache_size(cache_t *c) {
@@ -60,17 +68,17 @@ void cache_clear(cache_t *c) {
     if (!c) return;
 
     queue_t *q = queue_new();
-    node_t **s = calloc(c->capacity, sizeof(node_t *));
-    if (!q || !s) {
+    hash_t *h = hash_new(c->capacity);
+    if (!q || !h) {
         queue_free(q);
         return;
     }
 
     queue_free(c->q);
-    free(c->s);
+    hash_free(c->h);
 
     c->q = q;
-    c->s = s;
+    c->h = h;
     c->size = 0;    
 }
 
@@ -78,7 +86,7 @@ void cache_free(cache_t *c) {
     if (!c) return;
 
     queue_free(c->q);
-    free(c->s);
+    hash_free(c->h);
     free(c);
 }
 
