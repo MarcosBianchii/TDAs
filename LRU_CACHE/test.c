@@ -89,7 +89,7 @@ void test_cache_clear() {
 }
 
 void test_cache_full() {
-    cache_t *c = cache_new(20);
+    cache_t *c = cache_new(100);
 
     for (int i = 1000000; i >= 0; i--) {
         cache_put(c, i, i*10);
@@ -98,12 +98,14 @@ void test_cache_full() {
     cache_print(c);
     printf("size = %li\n\n", cache_size(c));
 
-    for (int i = 0; i < 3; i++) {
-        cache_print(c);
-        puts("");
-        if (cache_get(c, i) == -1)
-            printf("cache_get(c, %i) == -1\n", i);
-    }
+
+    for (int i = 0; i < 1000000; i++)
+        if (cache_get(c, i) != -1)
+            printf("%i ", i);
+    puts("");
+
+    printf("size = %li\n", cache_size(c));
+    printf("cache_get(c, 21) = %d\n", cache_get(c, 21));
 
     cache_free(c);
 }

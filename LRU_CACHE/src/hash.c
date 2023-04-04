@@ -44,11 +44,20 @@ void hash_put(hash_t *h, uint64_t p, node_t *n) {
     h->table[pos].node = n;
 }
 
-// TODO: mover el nodo en el hash si su pos inicial esta vacia.
 static uint64_t traverse_table_get(hash_t *h, uint64_t pos, uint64_t p) {
+    int64_t replacement = -1;
     uint32_t counter = 0;
-    while (counter++ < h->capacity && (h->table[pos].node || h->table[pos].flag) && node_get_page(h->table[pos].node) != p)
+    while (counter++ < h->capacity && (h->table[pos].node || h->table[pos].flag) && node_get_page(h->table[pos].node) != p) {
+        if (replacement == -1 && !h->table[pos].node)
+            replacement = pos;
         pos = (pos + 1) % h->capacity;
+    }
+
+    if (replacement != -1 && node_get_page(h->table[pos].node) == p) {
+        h->table[replacement] = h->table[pos];
+        h->table[pos] = (cell_t){0};
+        return replacement;
+    }
 
     return pos;
 }
@@ -58,8 +67,16 @@ node_t *hash_get(hash_t *h, uint64_t p) {
     return node_get_page(h->table[pos].node) == p ? h->table[pos].node : NULL;
 }
 
+static uint64_t traverse_table_rem(hash_t *h, uint64_t pos, uint64_t p) {
+    uint32_t counter = 0;
+    while (counter++ < h->capacity && (h->table[pos].node || h->table[pos].flag) && node_get_page(h->table[pos].node) != p)
+        pos = (pos + 1) % h->capacity;
+
+    return pos;
+}
+
 void hash_remove(hash_t *h, uint64_t p) {
-    uint64_t pos = traverse_table_get(h, hash(p) % h->capacity, p);
+    uint64_t pos = traverse_table_rem(h, hash(p) % h->capacity, p);
     if (node_get_page(h->table[pos].node) == p)
         h->table[pos] = (cell_t){
             .node = NULL,
