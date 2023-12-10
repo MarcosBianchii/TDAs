@@ -9,3 +9,4 @@ El objetivo del repo fue implementar distintas estructuras de datos en C donde n
 - `LRU Cache`
 - `String`
 - `Vector Dinámico`
+- `Thread Pool`
