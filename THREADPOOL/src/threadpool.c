@@ -160,7 +160,7 @@ thpool_new(size_t nthreads)
     }
 
     pthread_t *workers = malloc(sizeof(pthread_t) * nthreads);
-    if (!pool->workers) {
+    if (!workers) {
         queue_del(tasks);
         free(pool);
         return NULL;
