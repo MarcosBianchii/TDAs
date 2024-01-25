@@ -28,6 +28,7 @@ trie_new()
 {
     return (Trie) {
         .children = { 0 },
+        .count = 0,
         .end = false,
     };
 }
