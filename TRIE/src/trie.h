@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-
 #define CHILDREN_LEN 256
 
 typedef struct Trie {
@@ -19,11 +18,20 @@ Trie trie_new();
 
 
 // Adds a new set of symbols to the `Trie`.
-//
+// 
 // # Return
-//
+// 
 // Returns `true` if the given string was already
 // in the structure, otherwise returns `false`.
+// 
+// # Example
+// 
+// ```c
+// Trie t = trie_new();
+// assert(!trie_add(&t, "hell"));
+// assert(!trie_add(&t, "hello"));
+// assert(trie_add(&t, "hello"));
+// ```
 bool trie_add(Trie *t, const char *str);
 
 
@@ -33,15 +41,56 @@ bool trie_add(Trie *t, const char *str);
 //
 // Returns `true` if `str` was succesfully removed.
 // If the given string was not found returns `false`.
+//
+// # Example
+//
+// ```c
+// Trie t = trie_new();
+// trie_add(&t, "example");
+// assert(!trie_rm(&t, "ex"));
+// assert(trie_rm(&t, "example"));
+// ```
 bool trie_rm(Trie *t, const char *str);
 
 
 // Evaluates to `true` if the given `Trie` has the given string.
+//
+// # Example
+//
+// ```c
+// Trie t = trie_new();
+// trie_add(&t, "abc");
+// trie_add(&t, "bcd");
+//
+// // Contains.
+// assert(trie_contains(t, "abc"));
+// assert(trie_contains(t, "bcd"));
+//
+// // Doesn't contain.
+// assert(!trie_contains(t, "ab"));
+// assert(!trie_contains(t, "bc"));
+// assert(!trie_contains(t, "abcd"));
+// ```
 bool trie_contains(Trie t, const char *str);
 
 
-// Evaluates to `true` if  the given `Trie` contains any
-// word that starts with a specified prefix.
+// Evaluates to `true` if  the given `Trie` contains any word that starts with a
+// specified prefix.
+//
+// # Example
+//
+// ```c
+// Trie t = trie_new();
+// trie_add(&t, "abcdef");
+// 
+// // Contains prefix.
+// assert(trie_contains_prefix(t, "abc"));
+// assert(trie_contains_prefix(t, "abcdef"));
+//
+// // Doesn't contain prefix.
+// assert(!trie_contains_prefix(t, "bcd"));
+// assert(!trie_contains_prefix(t, "def"));
+// ```
 bool trie_contains_prefix(Trie t, const char *prefix); 
 
 

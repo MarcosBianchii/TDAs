@@ -35,7 +35,7 @@ trie_new()
 
 
 // Wrapper over `trie_add`.
-bool
+static bool
 __trie_add(Trie *t, unsigned char *str)
 {
     if (!contains_symbol(t, *str)) {
@@ -48,8 +48,10 @@ __trie_add(Trie *t, unsigned char *str)
             return false;
         }
 
-    } else if (t->children[*str]->end && str_is_last_char(str)) {
-        return true;
+    } else if (str_is_last_char(str)) {
+        bool prev = t->children[*str]->end;
+        t->children[*str]->end = true;
+        return prev;
     }
 
     return __trie_add(t->children[*str], str + 1);
@@ -86,7 +88,7 @@ __trie_rm(Trie *t, unsigned char *str, bool *deleted)
             *deleted = true;
             if (trie_is_empty(*t)) {
                 free(t);
-                t = NULL;
+                return NULL;
             }
         }
 
@@ -96,7 +98,7 @@ __trie_rm(Trie *t, unsigned char *str, bool *deleted)
     t->children[*str] = __trie_rm(t->children[*str], str + 1, deleted);
     if (trie_is_empty(*t) && !t->end) {
         free(t);
-        t = NULL;
+        return NULL;
     }
 
     return t;
@@ -147,7 +149,7 @@ trie_contains(Trie t, const char *signed_str)
 }
 
 
-bool
+static bool
 __trie_contains_prefix(Trie *t, unsigned char *prefix)
 {
     if (str_is_empty(prefix)) {
@@ -196,10 +198,10 @@ print_trie(Trie *t, char *acc, size_t len)
         if (read == t->count) break;
 
         if (contains_symbol(t, i)) {
-            char new_str[new_len];
+            char new_str[new_len + 1];
             snprintf(new_str, new_len + 1, "%s%c", acc, i);
             read++;
-            
+
             print_trie(t->children[i], new_str, new_len);
         }
     }
@@ -216,7 +218,7 @@ __trie_show(Trie t, const char *var_name)
 }
 
 
-void
+static void
 __trie_del(Trie *t)
 {
     for (int i = 0; i < CHILDREN_LEN; i++) {

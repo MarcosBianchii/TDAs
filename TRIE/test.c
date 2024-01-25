@@ -15,6 +15,22 @@ test_new()
     }
 }
 
+void
+test_add()
+{
+    Trie t = trie_new();
+    trie_add(&t, "hello");
+    trie_add(&t, "hell");
+    trie_add(&t, "hello, world");
+
+    assert(trie_contains(t, "hello, world"));
+    assert(trie_contains(t, "hello"));
+    assert(trie_contains(t, "hell"));
+
+    
+
+    trie_del(&t);
+}
 
 void
 test_contains()
@@ -86,6 +102,7 @@ int
 main()
 {
     test_new();
+    test_add();
     test_contains();
 
     return 0;
