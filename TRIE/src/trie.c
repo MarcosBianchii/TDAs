@@ -199,7 +199,7 @@ __trie_del(Trie *t)
         if (t->count == 0) break;
 
         if (t->children[i]) {
-            trie_del(t->children[i]);
+            __trie_del(t->children[i]);
             free(t->children[i]);
             t->count--;
         }
