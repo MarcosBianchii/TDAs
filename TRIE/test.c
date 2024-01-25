@@ -29,6 +29,16 @@ test_contains()
     assert(trie_add(&t, "Marty"));
     assert(trie_add(&t, ""));
 
+    // Assert containing prefixes.
+    assert(trie_contains_prefix(t, "Mad"));
+    assert(trie_contains_prefix(t, "Mar"));
+    assert(trie_contains_prefix(t, ""));
+    assert(trie_contains_prefix(t, "A"));
+
+    // Negatively assert the non-containing prefixes.
+    assert(!trie_contains_prefix(t, "abc"));
+    assert(!trie_contains_prefix(t, "bcd"));
+
     // Assert the containing strings.
     assert(trie_contains(t, "Madagascar"));
     assert(trie_contains(t, "Alex"));

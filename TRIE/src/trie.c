@@ -121,11 +121,11 @@ trie_rm(Trie *t, const char *signed_str)
 static bool
 __trie_contains(Trie *t, unsigned char *str)
 {
-    if (!t->children[*str]) {
+    if (!contains_symbol(t, *str)) {
         return false;
     }
 
-    if (t->children[*str]->end && str_is_empty(str + 1)) {
+    if (t->children[*str]->end && str_is_last_char(str)) {
         return true;
     }
 
@@ -144,6 +144,30 @@ trie_contains(Trie t, const char *signed_str)
     }
 
     return __trie_contains(&t, str);
+}
+
+
+bool
+__trie_contains_prefix(Trie *t, unsigned char *prefix)
+{
+    if (str_is_empty(prefix)) {
+        return true;
+    }
+
+    if (!contains_symbol(t, *prefix)) {
+        return false;
+    }
+
+    return __trie_contains_prefix(t->children[*prefix], prefix + 1);
+}
+
+
+bool
+trie_contains_prefix(Trie t, const char *signed_prefix)
+{
+    // Cast to `unsigned char *` to prevent negative indices.
+    unsigned char *prefix = (unsigned char *) signed_prefix;
+    return __trie_contains_prefix(&t, prefix);
 }
 
 

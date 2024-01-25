@@ -40,6 +40,11 @@ bool trie_rm(Trie *t, const char *str);
 bool trie_contains(Trie t, const char *str);
 
 
+// Evaluates to `true` if  the given `Trie` contains any
+// word that starts with a specified prefix.
+bool trie_contains_prefix(Trie t, const char *prefix); 
+
+
 // Evaluates to `true` if the given `Trie` has no strings.
 bool trie_is_empty(Trie t);
 
