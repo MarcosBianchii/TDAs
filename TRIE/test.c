@@ -27,8 +27,6 @@ test_add()
     assert(trie_contains(t, "hello"));
     assert(trie_contains(t, "hell"));
 
-    
-
     trie_del(&t);
 }
 
