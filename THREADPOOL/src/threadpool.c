@@ -1,7 +1,27 @@
+#include "deque.h"
 #include "threadpool.h"
-#include <assert.h>
 #include <stdio.h>
-#include <string.h>
+#include <stdbool.h>
+#include <pthread.h>
+
+
+typedef struct Task {
+    Job func;
+    void *arg;
+} Task;
+
+
+struct ThreadPool {
+    pthread_t *workers;
+    pthread_mutex_t work_lock;
+    pthread_cond_t new_task;
+    pthread_cond_t finished;
+    size_t running;
+    Deque tasks;
+    size_t len;
+    bool exit;
+};
+
 
 static Task *
 task_new(Job func, void *arg)
@@ -15,87 +35,13 @@ task_new(Job func, void *arg)
 
 }
 
+
 static void
-task_del(Task *task)
+task_del(void *task)
 {
     free(task);
 }
 
-static Queue *
-queue_new(size_t n)
-{
-    Queue *queue = malloc(sizeof(Queue));
-    if (!queue) return NULL;
-
-    queue->vec = malloc(sizeof(Task) * n);
-    if (!queue->vec) {
-        free(queue);
-        return NULL;
-    }
-
-    queue->len = 0;
-    queue->cap = n;
-    return queue;
-}
-
-static int
-queue_resize(Queue *queue, size_t new_cap)
-{
-    if (new_cap < queue->len) {
-        return -1;
-    }
-
-    queue->vec = realloc(queue->vec, sizeof(Task) * new_cap);
-    queue->cap = new_cap;
-    return 0;
-}
-
-static int
-queue_push(Queue *queue, Task *task)
-{
-    if (queue->len == queue->cap) {
-        if (queue_resize(queue, QUEUE_RESIZE_COEF * queue->cap) == -1) {
-            return 1;
-        }
-    }
-
-    queue->vec[queue->len++] = task;
-    return 0;
-}
-
-static bool
-queue_empty(Queue *queue)
-{
-    return queue->len == 0;
-}
-
-static Task *
-queue_pop(Queue *queue)
-{
-    if (queue_empty(queue)) {
-        return NULL;
-    }
-
-    Task *task = queue->vec[0];
-    queue->len--;
-
-    for (size_t i = 0; i < queue->len; i++) {
-        queue->vec[i] = queue->vec[i + 1];
-    }
-
-    return task;
-}
-
-static void
-queue_del(Queue *queue)
-{
-    for (size_t i = 0; i < queue->len; i++) {
-        task_del(queue->vec[i]);
-    }
-
-    free(queue->vec);
-    free(queue);
-}
 
 static void *
 __f(void *__send)
@@ -103,7 +49,7 @@ __f(void *__send)
     ThreadPool *pool = (ThreadPool *) __send;
     while (1) {
         pthread_mutex_lock(&pool->work_lock);
-        while (queue_empty(pool->tasks) && !pool->exit) {
+        while (deque_empty(pool->tasks) && !pool->exit) {
             pthread_cond_wait(&pool->new_task, &pool->work_lock);
         }
 
@@ -112,11 +58,11 @@ __f(void *__send)
             break;
         }
 
-        if (!queue_empty(pool->tasks)) {
+        if (!deque_empty(pool->tasks)) {
             pool->running++;
 
             // Get task from queue.
-            Task *task = queue_pop(pool->tasks);
+            Task *task = deque_pop_front(&pool->tasks);
             pthread_mutex_unlock(&pool->work_lock);
 
             task->func(task->arg);
@@ -135,9 +81,9 @@ __f(void *__send)
     return NULL;
 }
 
-// Instanciates a new pool with `n` workers.
+
 ThreadPool *
-thpool_new(size_t nthreads)
+threadpool_new(size_t nthreads)
 {
     if (nthreads == 0) return NULL;
 
@@ -145,15 +91,15 @@ thpool_new(size_t nthreads)
     if (!pool) return NULL;
 
     // Queue is the same size as the amount of workers.
-    Queue *tasks = queue_new(nthreads);
-    if (!tasks) {
+    Deque tasks = deque_new(nthreads);
+    if (!tasks.vec) {
         free(pool);
         return NULL;
     }
 
     pthread_t *workers = malloc(sizeof(pthread_t) * nthreads);
     if (!workers) {
-        queue_del(tasks);
+        deque_del(&tasks, free);
         free(pool);
         return NULL;
     }
@@ -176,9 +122,9 @@ thpool_new(size_t nthreads)
     return pool;
 }
 
-// Assigns 'job' to the first available worker. Returns `0` on success and `1` on failure.
+
 int
-thpool_spawn(ThreadPool *pool, Job job, void *arg)
+threadpool_spawn(ThreadPool *pool, Job job, void *arg)
 {
     if (!pool || !job || pool->exit)
         return 1;
@@ -187,70 +133,59 @@ thpool_spawn(ThreadPool *pool, Job job, void *arg)
     if (!task) return 1;
 
     pthread_mutex_lock(&pool->work_lock);
-    int res = queue_push(pool->tasks, task);
+    int res = deque_push_back(&pool->tasks, task);
     pthread_cond_signal(&pool->new_task);
     pthread_mutex_unlock(&pool->work_lock);
     return res;
 }
 
-// Returns the amount of running workers in the pool.
+
 size_t
-thpool_running(ThreadPool *pool)
+threadpool_running(ThreadPool *pool)
 {
     return pool ? pool->running : 0;
 }
 
-// Returns the amount of containing threads.
+
 size_t
-thpool_len(ThreadPool *pool)
+threadpool_len(ThreadPool *pool)
 {
     return pool ? pool->len : 0;
 }
 
-// Will block the calling thread until every task
-// in the queue is finished.
+
 void
-thpool_wait(ThreadPool *pool)
+threadpool_wait(ThreadPool *pool)
 {
     if (!pool) return;
 
     pthread_mutex_lock(&pool->work_lock);
 
-    while (!queue_empty(pool->tasks) || thpool_running(pool) > 0) {
+    while (!deque_empty(pool->tasks) || threadpool_running(pool) > 0) {
         pthread_cond_wait(&pool->finished, &pool->work_lock);
     }
 
     pthread_mutex_unlock(&pool->work_lock);
 }
 
-// Prints the state of the pool.
+
 void
-thpool_show(ThreadPool *pool)
+threadpool_show(ThreadPool *pool)
 {
     printf("pool: %p\n", pool);
     if (!pool) return;
 
-    printf("    running: %li\n", thpool_running(pool));
-    printf("    len: %li\n", thpool_len(pool));
+    printf("    running: %li\n", threadpool_running(pool));
+    printf("    len: %li\n", threadpool_len(pool));
     printf("    exit: %s\n", pool->exit ? "true" : "false");
 
-    Queue *queue = pool->tasks;
-    printf("queue: %p\n", queue);
-    if (!queue) return;
-
-    printf("    tasks: %li\n", queue->len);
-    printf("    capacity: %li\n", queue->cap);
+    printf("    tasks: %li\n", deque_len(pool->tasks));
+    printf("    capacity: %li\n", deque_cap(pool->tasks));
 }
 
-// Free's the memory used by 'pool'.
-//
-// # Considerations
-//
-// This function will block until all workers have finished their task.
-// It will not wait for the task queue to be empty, just for the running
-// workers to finish. Consider calling `threadpool_wait` before this.
+
 void
-thpool_del(ThreadPool *pool)
+threadpool_del(ThreadPool *pool)
 {
     if (!pool || pool->exit) return;
 
@@ -266,6 +201,8 @@ thpool_del(ThreadPool *pool)
     pthread_mutex_destroy(&pool->work_lock);
     pthread_cond_destroy(&pool->new_task);
     pthread_cond_destroy(&pool->finished);
-    queue_del(pool->tasks);
+
+    deque_del(&pool->tasks, task_del);
+    free(pool->workers);
     free(pool);
 }

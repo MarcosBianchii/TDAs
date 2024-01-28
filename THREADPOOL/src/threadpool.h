@@ -1,44 +1,47 @@
-#ifndef __THREADPOOL__
-#define __THREADPOOL__
+#ifndef __THREADPOOL_H__
+#define __THREADPOOL_H__
 
-#include <pthread.h>
 #include <stdlib.h>
-#include <stdbool.h>
-
-// Queue params.
-#define QUEUE_RESIZE_COEF 2
-#define QUEUE_SIZE_INIT 128
 
 typedef void (*Job)(void *);
-typedef struct Queue Queue;
+typedef struct ThreadPool ThreadPool;
 
-typedef struct Task {
-    Job func;
-    void *arg;
-} Task;
 
-typedef struct Queue {
-    Task **vec;
-    size_t len;
-    size_t cap;
-} Queue;
+// Instanciates a new `ThreadPool` with `nthreads` workers.
+ThreadPool *threadpool_new(size_t nthreads);
 
-typedef struct ThreadPool {
-    pthread_t *workers;
-    pthread_mutex_t work_lock;
-    pthread_cond_t new_task;
-    pthread_cond_t finished;
-    size_t running;
-    Queue *tasks;
-    size_t len;
-    bool exit;
-} ThreadPool;
 
-ThreadPool *thpool_new(size_t nthreads);
-int thpool_spawn(ThreadPool *pool, Job job, void *arg);
-void thpool_wait(ThreadPool *pool);
-size_t thpool_running(ThreadPool *pool);
-size_t thpool_len(ThreadPool *pool);
-void thpool_del(ThreadPool *pool);
+// Assigns `job` to the first available worker.
+//
+// # Return
+//
+// Returns `0` on success and `1` on failure.
+int threadpool_spawn(ThreadPool *pool, Job job, void *arg);
 
-#endif // __THREADPOOL__
+
+// Blocks the running thread until all workers finish their tasks.
+void threadpool_wait(ThreadPool *pool);
+
+
+// Returns the amount of running workers.
+size_t threadpool_running(ThreadPool *pool);
+
+
+// Returns the amount of threads in the pool.
+size_t threadpool_len(ThreadPool *pool);
+
+
+// Prints the state of the pool.
+void threadpool_show(ThreadPool *pool);
+
+
+// Free's the memory used by the thread pool.
+//
+// # Considerations
+//
+// This function will block until all workers have finished their task.
+// It will not wait for the task queue to be empty, just for the running
+// workers to finish. Consider calling `threadpool_wait` before this.
+void threadpool_del(ThreadPool *pool);
+
+#endif // __THREADPOOL_H__

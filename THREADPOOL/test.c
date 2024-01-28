@@ -1,20 +1,14 @@
-#include <stdio.h>
 #include "src/threadpool.h"
+#include <stdio.h>
 #include <assert.h>
 
 void test_init() {
-    ThreadPool *pool = thpool_new(4);
+    ThreadPool *pool = threadpool_new(4);
     
-    // Queue.
-    assert(pool->tasks->len == 0);
-    assert(pool->tasks->vec != NULL);
+    assert(threadpool_running(pool) == 0);
+    assert(threadpool_len(pool) == 4);
 
-    // Workers.
-    assert(!pool->exit);
-    assert(pool->running == 0);
-    assert(pool->len == 4);
-
-    thpool_del(pool);
+    threadpool_del(pool);
 }
 
 const size_t N = 100000000;
@@ -27,65 +21,58 @@ void sum(void *arg) {
 }
 
 void test_spawn_sequential() {
-    ThreadPool *pool = thpool_new(10);
-    assert(thpool_spawn(pool, NULL, NULL) == 2);
+    ThreadPool *pool = threadpool_new(10);
+    assert(threadpool_spawn(pool, NULL, NULL) == 1);
     size_t a = 0;
 
-    assert(pool->running == 0);
-    thpool_spawn(pool, sum, &a);
-    thpool_wait(pool);
-    assert(pool->running == 0);
+    assert(threadpool_running(pool) == 0);
+    threadpool_spawn(pool, sum, &a);
+    threadpool_wait(pool);
+    assert(threadpool_running(pool) == 0);
     assert(a == N);
 
-    assert(pool->running == 0);
-    thpool_spawn(pool, sum, &a);
-    thpool_wait(pool);
-    assert(pool->running == 0);
+    assert(threadpool_running(pool) == 0);
+    threadpool_spawn(pool, sum, &a);
+    threadpool_wait(pool);
+    assert(threadpool_running(pool) == 0);
     assert(a == 2 * N);
 
-    assert(pool->running == 0);
-    thpool_spawn(pool, sum, &a);
-    thpool_wait(pool);
-    assert(pool->running == 0);
+    assert(threadpool_running(pool) == 0);
+    threadpool_spawn(pool, sum, &a);
+    threadpool_wait(pool);
+    assert(threadpool_running(pool) == 0);
     assert(a == 3 * N);
 
-    thpool_del(pool);
+    threadpool_del(pool);
 }
 
-const size_t M = 94;
-
-struct Arg {
-    size_t id;
-    char *arg;
-};
+#define M 95
 
 void ascii(void *__arg) {
-    struct Arg *arg = (struct Arg *) __arg;
-    arg->arg = malloc(M);
+    size_t *id = (size_t *) __arg;
 
-    for (size_t i = 0; i < M; i++) {
-        arg->arg[i] = ' ' + i;
+    char str[M] = {0};
+    for (size_t i = 0; i < M - 1; i++) {
+        str[i] = ' ' + i;
     }
 
-    printf("%li: %s\n", arg->id, arg->arg);
-    free(arg->arg);
-    free(arg);
+    printf("%li: %s\n", *id, str);
+    free(id);
 }
 
 void test_spawn_async() {
-    ThreadPool *pool = thpool_new(2);
+    ThreadPool *pool = threadpool_new(2);
 
     for (size_t i = 0; i < 100; i++) {
-        struct Arg *arg = malloc(sizeof(struct Arg));
-        arg->id = i;
-        arg->arg = NULL;
-        thpool_spawn(pool, ascii, arg);
+        size_t *id = malloc(sizeof(size_t));
+        *id = i;
+        threadpool_spawn(pool, ascii, id);
     }
 
-    thpool_wait(pool);
-    assert(pool->running == 0);
+    threadpool_wait(pool);
+    assert(threadpool_running(pool) == 0);
 
-    thpool_del(pool);
+    threadpool_del(pool);
 }
 
 int main() {
