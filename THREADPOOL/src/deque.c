@@ -13,13 +13,14 @@ deque_new(size_t n)
         .cap = n,
     };
 }
-
+#include <stdio.h>
 
 int
 deque_push_front(Deque *deque, void *item)
 {
     if (deque_full(*deque)) {
-        if (deque_resize(deque, DEQUE_RESIZE_COEF * deque->cap) == 1) {
+        size_t prev_cap = deque->cap;
+        if (deque_resize(deque, DEQUE_RESIZE_COEF * deque->cap) <= prev_cap) {
             return 1;
         }
     }
@@ -37,7 +38,8 @@ int
 deque_push_back(Deque *deque, void *item)
 {
     if (deque_full(*deque)) {
-        if (deque_resize(deque, DEQUE_RESIZE_COEF * deque->cap) == 1) {
+        size_t prev_cap = deque->cap;
+        if (deque_resize(deque, DEQUE_RESIZE_COEF * deque->cap) <= prev_cap) {
             return 1;
         }
     }
@@ -118,7 +120,7 @@ deque_resize(Deque *deque, size_t new_cap)
     memmove(new_table, &deque->vec[deque->i], __n);
 
     // Move [..j] items.
-    size_t __m = sizeof(void *) * (moved - deque->len);
+    size_t __m = sizeof(void *) * (deque->len - moved);
     memmove(new_table + moved, deque->vec, __m);
 
     free(deque->vec);

@@ -1,4 +1,5 @@
 #include "src/threadpool.h"
+#include "src/deque.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -75,9 +76,56 @@ void test_spawn_async() {
     threadpool_del(pool);
 }
 
+void print_deque(Deque d) {
+    printf("i: %li, j: %li, len: %li, cap: %li\n", d.i, d.j, d.len, d.cap);
+    for (size_t i = 0; i < d.cap; i++) {
+        void *item = d.vec[i];
+        if (item) {
+            printf("%li: %p\n", i, d.vec[i]);
+        } else {
+            printf("%li: (null)\n", i);
+        }
+    }
+
+    puts("");
+}
+
+void test_deque() {
+    Deque d = deque_new(3);
+    print_deque(d);
+
+    deque_push_back(&d, (void *) 1);
+    deque_push_back(&d, (void *) 2);
+    print_deque(d);
+
+    deque_pop_front(&d);
+    print_deque(d);
+
+    deque_push_front(&d, (void *) 3);
+    print_deque(d);
+
+    deque_push_front(&d, (void *) 4);
+    print_deque(d);
+
+    deque_push_front(&d, (void *) 5);
+    print_deque(d);
+
+    deque_push_front(&d, (void *) 6);
+    print_deque(d);
+
+    deque_push_back(&d, (void *) 7);
+    print_deque(d);
+
+    deque_push_back(&d, (void *) 8);
+    print_deque(d);
+
+    deque_del(&d, NULL);
+}
+
 int main() {
     test_init();
     test_spawn_sequential();
     test_spawn_async();
+    test_deque();
     return 0;
 }
