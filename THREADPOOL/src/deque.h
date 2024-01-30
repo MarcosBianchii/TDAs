@@ -8,10 +8,7 @@
 
 typedef struct Deque {
     void **vec;
-    size_t i;
-    size_t j;
-    size_t len;
-    size_t cap;
+    size_t len, cap, i, j;
 } Deque;
 
 

@@ -14,11 +14,9 @@ typedef struct Task {
 struct ThreadPool {
     pthread_t *workers;
     pthread_mutex_t work_lock;
-    pthread_cond_t new_task;
-    pthread_cond_t finished;
-    size_t running;
+    pthread_cond_t new_task, finished;
+    size_t running, len;
     Deque tasks;
-    size_t len;
     bool exit;
 };
 
@@ -90,14 +88,13 @@ threadpool_new(size_t nthreads)
     ThreadPool *pool = calloc(1, sizeof(ThreadPool));
     if (!pool) return NULL;
 
-    // Queue is the same size as the amount of workers.
-    Deque tasks = deque_new(nthreads);
+    Deque tasks = deque_new(4 * nthreads);
     if (!tasks.vec) {
         free(pool);
         return NULL;
     }
 
-    pthread_t *workers = malloc(sizeof(pthread_t) * nthreads);
+    pthread_t *workers = malloc(nthreads * sizeof(pthread_t));
     if (!workers) {
         deque_del(&tasks, free);
         free(pool);
@@ -106,9 +103,9 @@ threadpool_new(size_t nthreads)
 
     // Initialize pool.
     *pool = (ThreadPool) {
-        .tasks = tasks,
-        .workers = workers,
-        .len = nthreads,
+        workers: workers,
+        tasks: tasks,
+        len: nthreads,
     };
 
     pthread_mutex_init(&pool->work_lock, NULL);
@@ -126,8 +123,7 @@ threadpool_new(size_t nthreads)
 int
 threadpool_spawn(ThreadPool *pool, Job job, void *arg)
 {
-    if (!pool || !job || pool->exit)
-        return 1;
+    if (!pool || !job || pool->exit) return 1;
 
     Task *task = task_new(job, arg);
     if (!task) return 1;

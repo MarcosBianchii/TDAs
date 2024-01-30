@@ -6,14 +6,11 @@ Deque
 deque_new(size_t n)
 {
     return (Deque) {
-        .vec = calloc(n, sizeof(void *)),
-        .i = 0,
-        .j = 0,
-        .len = 0,
-        .cap = n,
+        vec: calloc(n, sizeof(void *)),
+        cap: n,
     };
 }
-#include <stdio.h>
+
 
 int
 deque_push_front(Deque *deque, void *item)
@@ -26,7 +23,7 @@ deque_push_front(Deque *deque, void *item)
     }
 
     size_t i = deque->i;
-    deque->i = i == 0 ? deque->cap - 1 : i - 1;
+    deque->i = (i == 0 ? deque->cap : i) - 1;
     deque->vec[deque->i] = item;
     deque->len++;
 
@@ -76,7 +73,7 @@ deque_pop_back(Deque *deque)
     }
 
     size_t j = deque->j;
-    deque->j = j == 0 ? deque->cap - 1 : j - 1;
+    deque->j = (j == 0 ? deque->cap : j) - 1;
     
     void *item = deque->vec[deque->j];
     deque->vec[deque->j] = NULL;
@@ -125,11 +122,10 @@ deque_resize(Deque *deque, size_t new_cap)
 
     free(deque->vec);
     *deque = (Deque) {
-        .vec = new_table,
-        .i = 0,
-        .j = deque->len,
-        .len = deque->len,
-        .cap = new_cap,
+        vec: new_table,
+        len: deque->len,
+        cap: new_cap,
+        j: deque->len,
     };
 
     return new_cap;
@@ -153,13 +149,13 @@ deque_cap(Deque deque)
 void
 deque_del(Deque *deque, void (*destructor)(void *))
 {
-    size_t i = deque->i;
-    size_t cap = deque->cap;
-    void **vec = deque->vec;
-
-    for (size_t k = 0; k < deque->len; k++) {
-        if (destructor) destructor(vec[(i + k) % cap]);
+    if (destructor) {
+        size_t i = deque->i, cap = deque->cap;
+        void **vec = deque->vec;
+        for (size_t k = 0; k < deque->len; k++) {
+            destructor(vec[(i + k) % cap]);
+        }
     }
 
-    free(vec);
+    free(deque->vec);
 }
